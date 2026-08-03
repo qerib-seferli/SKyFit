@@ -1,0 +1,33 @@
+{
+  "name": "sky-fit-desktop",
+  "version": "1.0.0",
+  "description": "SKy Fit fitness management system",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis"
+  },
+  "devDependencies": {
+    "electron": "^37.2.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "az.skyfit.club",
+    "productName": "SKy Fit",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!dist/**"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/img/logo.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
