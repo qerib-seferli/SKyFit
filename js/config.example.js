@@ -1,6 +1,6 @@
 window.SKYFIT_CONFIG = {
-  SUPABASE_URL: "https://YOUR_PROJECT.supabase.co",
-  SUPABASE_ANON_KEY: "YOUR_ANON_KEY",
+  SUPABASE_URL: "https://elpwornsvnplyzyufqir.supabase.co",
+  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVscHdvcm5zdm5wbHl6eXVmcWlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4Mjc0NjgsImV4cCI6MjEwMTQwMzQ2OH0.9kxI4ZwUEJjwzVOweZowdAdlkAk9tUZ9rg7Yf7CnJJo",
   SITE_URL: "https://YOUR_USERNAME.github.io/YOUR_REPOSITORY",
   BUSINESS: {
     name: "SKy Fit",
