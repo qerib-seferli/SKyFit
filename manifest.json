@@ -1,18 +1,81 @@
 {
+  "id": "./",
   "name": "SKy Fit Club",
   "short_name": "SKy Fit",
-  "description": "Fitness club management and member app",
-  "start_url": "./index.html",
+  "description": "SKy Fit üzvlük, məhsul, borc və fitness club idarəetmə sistemi.",
+  "lang": "az",
+  "dir": "ltr",
+  "start_url": "./index.html?source=pwa",
   "scope": "./",
   "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "portrait-primary",
   "background_color": "#05070b",
-  "theme_color": "#ffde00",
+  "theme_color": "#05070b",
+  "categories": [
+    "fitness",
+    "health",
+    "lifestyle",
+    "shopping",
+    "business"
+  ],
   "icons": [
     {
       "src": "assets/img/logo.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "assets/img/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ana səhifə",
+      "short_name": "Ana səhifə",
+      "description": "SKy Fit ana səhifəsini aç",
+      "url": "./index.html?source=shortcut",
+      "icons": [
+        {
+          "src": "assets/img/logo.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Şəxsi kabinet",
+      "short_name": "Profil",
+      "description": "Üzvlük və profil məlumatlarını aç",
+      "url": "./profile.html?source=shortcut",
+      "icons": [
+        {
+          "src": "assets/img/logo.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Admin paneli",
+      "short_name": "Admin",
+      "description": "SKy Fit idarəetmə panelini aç",
+      "url": "./admin.html?source=shortcut",
+      "icons": [
+        {
+          "src": "assets/img/logo.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }
