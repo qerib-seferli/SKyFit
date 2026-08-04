@@ -1,9 +1,2511 @@
-<!doctype html><html lang="az" data-theme="dark"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="css/style.css"><title>Admin | SKy Fit</title></head><body><div data-header></div><div class="app-layout"><aside class="sidebar"><div class="side-nav"><button data-panel="dashboard">▦ Dashboard</button><button data-panel="pos">◉ Tez satış</button><button data-panel="members">♟ Üzvlər</button><button data-panel="debts">₼ Borclar</button><button data-panel="products">▣ Məhsullar</button><button data-panel="ledger">≡ Dəftər</button><button data-panel="reports">⌁ Hesabatlar</button></div></aside><main class="main"><div class="split"><div><span class="muted" id="adminName">Admin</span><h1 id="pageTitle">İdarəetmə paneli</h1></div><button class="btn" onclick="location.reload()">Yenilə</button></div>
-<section id="panel-dashboard" class="panel"><div id="stats" class="stats"></div></section>
-<section id="panel-pos" class="panel"><div class="pos-grid"><div><div class="toolbar"><input id="posSearch" class="input" placeholder="Məhsul axtar"><select id="posMember" class="input"></select></div><div id="posProducts" class="catalog-grid"></div></div><aside class="card"><h2>Səbət</h2><div id="cartLines"></div><div class="summary-row total"><span>Yekun</span><span id="cartTotal">0 AZN</span></div><select id="paymentMethod" class="input"><option value="cash">Nağd</option><option value="card">Kart</option><option value="transfer">Köçürmə</option></select><select id="paymentStatus" class="input" style="margin-top:8px"><option value="paid">Ödənilib</option><option value="debt">Borca yaz</option></select><button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="completeSale()">Satışı tamamla</button></aside></div></section>
-<section id="panel-members" class="panel"><div class="toolbar"><button class="btn btn-primary" onclick="openNewMember()">+ Yeni üzv</button><button class="btn" onclick="openMembership()">+ Abunəlik</button></div><div class="table-wrap"><table class="table"><thead><tr><th>Üzv</th><th>Plan</th><th>Başlama</th><th>Bitmə</th><th>Status</th><th></th></tr></thead><tbody id="membersTable"></tbody></table></div></section>
-<section id="panel-debts" class="panel"><div class="table-wrap"><table class="table"><thead><tr><th>Üzv</th><th>Telefon</th><th>Borc</th><th>Yenilənmə</th><th></th></tr></thead><tbody id="debtsTable"></tbody></table></div></section>
-<section id="panel-products" class="panel"><div class="toolbar"><button class="btn btn-primary" onclick="editProduct()">+ Yeni məhsul</button><button class="btn" onclick="addStock()">+ Stok daxil et</button></div><div class="table-wrap"><table class="table"><thead><tr><th>Məhsul</th><th>Satış tipi</th><th>Qalıq</th><th>Porsiya</th><th>Qiymət</th><th>Status</th><th></th></tr></thead><tbody id="productsTable"></tbody></table></div></section>
-<section id="panel-ledger" class="panel"><div class="toolbar"><button class="btn btn-primary" onclick="openLedger()">+ Yeni qeyd</button><input id="ledgerFrom" class="input" type="date"><input id="ledgerTo" class="input" type="date"><button class="btn" onclick="loadLedger()">Göstər</button></div><div class="table-wrap"><table class="table"><thead><tr><th>Tarix</th><th>Tip</th><th>Kateqoriya</th><th>Açıqlama</th><th>Məbləğ</th></tr></thead><tbody id="ledgerTable"></tbody></table></div></section>
-<section id="panel-reports" class="panel"><div class="toolbar"><input id="reportFrom" class="input" type="date"><input id="reportTo" class="input" type="date"><button class="btn" onclick="loadReports()">Hesabla</button></div><div id="reportStats" class="stats" style="grid-template-columns:repeat(3,1fr)"></div><div class="card" style="margin-top:14px"><canvas id="reportChart" class="chart"></canvas><p class="muted">Yaşıl: mədaxil · Qırmızı: məxaric</p></div></section>
-</main></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/config.js"></script><script type="module" src="js/admin.js"></script></body></html>
+<!doctype html>
+<html lang="az" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#05070b">
+  <meta name="color-scheme" content="dark light">
+
+  <meta
+    name="description"
+    content="SKy Fit admin paneli — satış, üzvlük, borc, stok, mədaxil, məxaric və hesabatlar."
+  >
+
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/img/logo.png">
+  <link rel="apple-touch-icon" href="assets/img/logo.png">
+
+  <link
+    rel="preload"
+    href="assets/img/admin-background.jpg"
+    as="image"
+  >
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <title>Admin panel | SKy Fit</title>
+</head>
+
+<body class="admin-page">
+  <a class="skip-link" href="#adminMain">
+    Admin panelə keç
+  </a>
+
+  <!-- =====================================================
+       YÜKLƏNMƏ EKRANI
+  ====================================================== -->
+  <div
+    id="appLoader"
+    class="app-loader"
+    role="status"
+    aria-live="polite"
+    aria-label="Admin panel yüklənir"
+  >
+    <div class="app-loader__content">
+      <div class="app-loader__media">
+        <img
+          class="sky-loader-image"
+          src="assets/img/fitness-loader.gif"
+          alt=""
+          width="96"
+          height="96"
+        >
+      </div>
+
+      <strong class="app-loader__title">
+        SKy Fit
+      </strong>
+
+      <span class="app-loader__text">
+        İdarəetmə paneli hazırlanır...
+      </span>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       ŞƏBƏKƏ STATUSU
+  ====================================================== -->
+  <div
+    id="networkStatus"
+    class="network-status"
+    role="status"
+    aria-live="polite"
+    hidden
+  >
+    İnternet bağlantısı yoxdur
+  </div>
+
+  <!-- =====================================================
+       ADMIN TOPBAR
+  ====================================================== -->
+  <header class="topbar admin-topbar" id="siteHeader">
+    <div class="admin-topbar__inner">
+      <button
+        id="adminSidebarToggle"
+        class="icon-btn admin-sidebar-toggle"
+        type="button"
+        aria-label="Admin menyusunu aç və ya bağla"
+        aria-controls="adminSidebar"
+        aria-expanded="true"
+      >
+        <span aria-hidden="true">☰</span>
+      </button>
+
+      <a
+        class="brand"
+        href="index.html"
+        aria-label="SKy Fit ana səhifə"
+      >
+        <img
+          src="assets/img/logo.png"
+          alt="SKy Fit loqosu"
+          width="44"
+          height="44"
+        >
+
+        <span class="brand__text">
+          <strong>
+            <span>SKy</span> Fit
+          </strong>
+
+          <small>İdarəetmə paneli</small>
+        </span>
+      </a>
+
+      <div class="admin-topbar__search">
+        <label class="search-control" for="adminGlobalSearch">
+          <span class="sr-only">
+            Üzv, məhsul və ya əməliyyat axtar
+          </span>
+
+          <input
+            id="adminGlobalSearch"
+            class="input"
+            type="search"
+            placeholder="Üzv, telefon və ya məhsul axtar..."
+            autocomplete="off"
+          >
+        </label>
+
+        <div
+          id="adminGlobalSearchResults"
+          class="global-search-results"
+          hidden
+        ></div>
+      </div>
+
+      <div class="admin-topbar__actions">
+        <button
+          id="adminNotificationsButton"
+          class="icon-btn notification-button"
+          type="button"
+          aria-label="Xəbərdarlıqlar"
+          aria-controls="adminNotificationsPanel"
+          aria-expanded="false"
+        >
+          <span aria-hidden="true">♢</span>
+
+          <span
+            id="adminNotificationCount"
+            class="notification-count"
+            hidden
+          >
+            0
+          </span>
+        </button>
+
+        <button
+          id="pwaInstallButton"
+          class="icon-btn pwa-install-button"
+          type="button"
+          aria-label="SKy Fit tətbiqini quraşdır"
+          title="Tətbiqi quraşdır"
+          hidden
+        >
+          <span aria-hidden="true">↓</span>
+        </button>
+
+        <button
+          id="themeToggle"
+          class="icon-btn"
+          type="button"
+          aria-label="Ağ və qara rejimi dəyiş"
+          title="Görünüş rejimi"
+        >
+          <span class="theme-icon" aria-hidden="true">◐</span>
+        </button>
+
+        <div class="admin-account">
+          <button
+            id="adminAccountButton"
+            class="admin-account__button"
+            type="button"
+            aria-controls="adminAccountMenu"
+            aria-expanded="false"
+          >
+            <img
+              id="adminAvatar"
+              src="assets/img/logo.png"
+              alt="Admin profil şəkli"
+              width="38"
+              height="38"
+            >
+
+            <span>
+              <strong id="adminName">Admin</strong>
+              <small id="adminRole">İdarəçi</small>
+            </span>
+
+            <i aria-hidden="true">⌄</i>
+          </button>
+
+          <div
+            id="adminAccountMenu"
+            class="admin-account__menu"
+            hidden
+          >
+            <a href="profile.html">
+              Profilim
+            </a>
+
+            <a href="index.html">
+              Sayta bax
+            </a>
+
+            <button
+              id="adminLogoutButton"
+              type="button"
+            >
+              Çıxış
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- =====================================================
+       ADMIN BİLDİRİŞ PANELİ
+  ====================================================== -->
+  <aside
+    id="adminNotificationsPanel"
+    class="admin-notifications-panel"
+    aria-label="Admin xəbərdarlıqları"
+    hidden
+  >
+    <div class="admin-notifications-panel__header">
+      <div>
+        <span class="section-kicker">
+          Sistem xəbərdarlıqları
+        </span>
+
+        <h2>
+          Diqqət tələb edənlər
+        </h2>
+      </div>
+
+      <button
+        id="closeAdminNotifications"
+        class="icon-btn"
+        type="button"
+        aria-label="Xəbərdarlıq panelini bağla"
+      >
+        ×
+      </button>
+    </div>
+
+    <div
+      id="adminNotificationsList"
+      class="admin-notifications-list"
+    >
+      <div class="empty-state empty-state--compact">
+        <p>Xəbərdarlıqlar yüklənir...</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- =====================================================
+       ADMIN LAYOUT
+  ====================================================== -->
+  <div class="app-layout admin-layout">
+    <!-- ===================================================
+         SIDEBAR
+    ==================================================== -->
+    <aside
+      id="adminSidebar"
+      class="sidebar admin-sidebar"
+      aria-label="Admin menyusu"
+    >
+      <div class="admin-sidebar__header">
+        <div class="admin-sidebar__business">
+          <span class="status-dot">
+            <i aria-hidden="true"></i>
+            Sistem aktivdir
+          </span>
+
+          <small>
+            SKy Fit Club
+          </small>
+        </div>
+      </div>
+
+      <nav class="side-nav admin-side-nav">
+        <button
+          class="active"
+          type="button"
+          data-panel="dashboard"
+          aria-controls="panel-dashboard"
+          aria-selected="true"
+        >
+          <span class="side-nav__icon" aria-hidden="true">▦</span>
+
+          <span class="side-nav__text">
+            Dashboard
+          </span>
+        </button>
+
+        <button
+          type="button"
+          data-panel="pos"
+          aria-controls="panel-pos"
+          aria-selected="false"
+        >
+          <span class="side-nav__icon" aria-hidden="true">◉</span>
+
+          <span class="side-nav__text">
+            Tez satış
+          </span>
+        </button>
+
+        <button
+          type="button"
+          data-panel="attendance"
+          aria-controls="panel-attendance"
+          aria-selected="false"
+        >
+          <span class="side-nav__icon" aria-hidden="true">✓</span>
+
+          <span class="side-nav__text">
+            Giriş qeydiyyatı
+          </span>
+        </button>
+
+        <button
+          type="button"
+          data-panel="members"
+          aria-controls="panel-members"
+          aria-selected="false"
+        >
+          <span class="side-nav__icon" aria-hidden="true">♙</span>
+
+          <span class="side-nav__text">
+            Üzvlər
+          </span>
+        </button>
+
+        <button
+          type="button"
+          data-panel="memberships"
+          aria-controls="panel-memberships"
+          aria-selected="false"
+        >
+          <span class="side-nav__icon" aria-hidden="true">◷</span>
+
+          <span class="side-nav__text">
+            Abunəliklər
+          </span>
+
+          <span
+            id="membershipWarningCount"
+            class="side-nav__count"
+            hidden
+          >
+            0
+          </span>
+        </button>
+
+        <button
+          type="button"
+          data-panel="debts"
+          aria-controls="panel-debts"
+          aria-selected="false"
+        >
+          <span class="side-nav__icon" aria-hidden="true">₼</span>
+
+          <span class="side-nav__text">
+            Borclar
+          </span>
+
+          <span
+            id="debtWarningCount"
+            class="side-nav__count side-nav__count--danger"
+            hidden
+          >
+            0
+          </span>
+        </button>
+
+        <button
+          type="button"
+          data-panel="products"
+          aria-controls="panel-products"
+          aria-selected="false"
+        >
+          <span class="side-nav__icon" aria-hidden="true">▣</span>
+
+          <span class="side-nav__text">
+            Məhsullar
+          </span>
+
+          <span
+            id="stockWarningCount"
+            class="side-nav__count side-nav__count--danger"
+            hidden
+          >
+            0
+          </span>
+        </button>
+
+        <button
+          type="button"
+          data-panel="stock"
+          aria-controls="panel-stock"
+          aria-selected="false"
+        >
+          <span class="side-nav__icon" aria-hidden="true">⇅</span>
+
+          <span class="side-nav__text">
+            Stok hərəkətləri
+          </span>
+        </button>
+
+        <button
+          type="button"
+          data-panel="ledger"
+          aria-controls="panel-ledger"
+          aria-selected="false"
+        >
+          <span class="side-nav__icon" aria-hidden="true">≡</span>
+
+          <span class="side-nav__text">
+            Gündəlik dəftər
+          </span>
+        </button>
+
+        <button
+          type="button"
+          data-panel="reports"
+          aria-controls="panel-reports"
+          aria-selected="false"
+        >
+          <span class="side-nav__icon" aria-hidden="true">⌁</span>
+
+          <span class="side-nav__text">
+            Hesabatlar
+          </span>
+        </button>
+
+        <button
+          type="button"
+          data-panel="trainers"
+          aria-controls="panel-trainers"
+          aria-selected="false"
+        >
+          <span class="side-nav__icon" aria-hidden="true">★</span>
+
+          <span class="side-nav__text">
+            Məşqçilər
+          </span>
+        </button>
+
+        <button
+          type="button"
+          data-panel="settings"
+          aria-controls="panel-settings"
+          aria-selected="false"
+        >
+          <span class="side-nav__icon" aria-hidden="true">⚙</span>
+
+          <span class="side-nav__text">
+            Tənzimləmələr
+          </span>
+        </button>
+      </nav>
+
+      <div class="admin-sidebar__footer">
+        <a
+          class="btn btn-outline"
+          href="index.html"
+        >
+          Sayta keç
+        </a>
+
+        <span>
+          SKy Fit Pro v1.0
+        </span>
+      </div>
+    </aside>
+
+    <!-- ===================================================
+         ƏSAS ADMIN MƏZMUNU
+    ==================================================== -->
+    <main id="adminMain" class="main admin-main">
+      <!-- =================================================
+           SƏHİFƏ BAŞLIĞI
+      ================================================== -->
+      <div class="admin-page-header">
+        <div>
+          <span class="section-kicker">
+            SKy Fit idarəetməsi
+          </span>
+
+          <h1 id="pageTitle">
+            İdarəetmə paneli
+          </h1>
+
+          <p id="pageDescription">
+            Zalın gündəlik vəziyyətini bir baxışda izləyin.
+          </p>
+        </div>
+
+        <div class="admin-page-header__actions">
+          <div class="admin-date-chip">
+            <span aria-hidden="true">◷</span>
+
+            <span id="adminCurrentDate">
+              Tarix yüklənir
+            </span>
+          </div>
+
+          <button
+            id="adminRefreshButton"
+            class="btn btn-outline"
+            type="button"
+          >
+            <span aria-hidden="true">↻</span>
+            Yenilə
+          </button>
+        </div>
+      </div>
+
+      <!-- =================================================
+           DASHBOARD
+      ================================================== -->
+      <section
+        id="panel-dashboard"
+        class="panel active"
+        data-admin-panel="dashboard"
+      >
+        <div class="admin-dashboard-hero card neon">
+          <div class="admin-dashboard-hero__background" aria-hidden="true"></div>
+
+          <div class="admin-dashboard-hero__content">
+            <span class="eyebrow">
+              Canlı idarəetmə
+            </span>
+
+            <h2>
+              Zalın bu günkü vəziyyəti
+            </h2>
+
+            <p>
+              Satışlar, üzvlər, borclar, abunəliklər və stok
+              məlumatları Supabase bazasından real vaxtda yenilənir.
+            </p>
+
+            <div class="actions">
+              <button
+                class="btn btn-primary"
+                type="button"
+                data-open-panel="pos"
+              >
+                Tez satış et
+              </button>
+
+              <button
+                class="btn btn-outline"
+                type="button"
+                data-open-panel="members"
+              >
+                Yeni üzv əlavə et
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="stats"
+          class="stats admin-stats"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <article class="card stat skeleton-stat"></article>
+          <article class="card stat skeleton-stat"></article>
+          <article class="card stat skeleton-stat"></article>
+          <article class="card stat skeleton-stat"></article>
+          <article class="card stat skeleton-stat"></article>
+          <article class="card stat skeleton-stat"></article>
+          <article class="card stat skeleton-stat"></article>
+          <article class="card stat skeleton-stat"></article>
+        </div>
+
+        <div class="grid grid-2 admin-dashboard-grid">
+          <section class="card">
+            <div class="card-header">
+              <div>
+                <span class="section-kicker">
+                  Son əməliyyatlar
+                </span>
+
+                <h2>
+                  Bu günün dəftəri
+                </h2>
+              </div>
+
+              <button
+                class="btn btn-small btn-outline"
+                type="button"
+                data-open-panel="ledger"
+              >
+                Hamısına bax
+              </button>
+            </div>
+
+            <div
+              id="dashboardLedgerList"
+              class="dashboard-list"
+            >
+              <div class="table-loading">
+                <span class="button-loader"></span>
+                Məlumatlar yüklənir...
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-header">
+              <div>
+                <span class="section-kicker">
+                  Xəbərdarlıqlar
+                </span>
+
+                <h2>
+                  Diqqət tələb edənlər
+                </h2>
+              </div>
+            </div>
+
+            <div
+              id="dashboardWarningsList"
+              class="dashboard-list"
+            >
+              <div class="table-loading">
+                <span class="button-loader"></span>
+                Xəbərdarlıqlar hesablanır...
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="grid grid-2 admin-dashboard-grid">
+          <section class="card">
+            <div class="card-header">
+              <div>
+                <span class="section-kicker">
+                  Maliyyə
+                </span>
+
+                <h2>
+                  Son 7 gün
+                </h2>
+              </div>
+
+              <button
+                class="btn btn-small btn-outline"
+                type="button"
+                data-open-panel="reports"
+              >
+                Ətraflı
+              </button>
+            </div>
+
+            <canvas
+              id="dashboardFinanceChart"
+              class="chart"
+              aria-label="Son 7 günün gəlir və xərc qrafiki"
+            ></canvas>
+
+            <div class="chart-legend">
+              <span>
+                <i class="chart-legend__income"></i>
+                Mədaxil
+              </span>
+
+              <span>
+                <i class="chart-legend__expense"></i>
+                Məxaric
+              </span>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-header">
+              <div>
+                <span class="section-kicker">
+                  Anbar
+                </span>
+
+                <h2>
+                  Azalan stoklar
+                </h2>
+              </div>
+
+              <button
+                class="btn btn-small btn-outline"
+                type="button"
+                data-open-panel="products"
+              >
+                Məhsullara bax
+              </button>
+            </div>
+
+            <div
+              id="dashboardLowStockList"
+              class="dashboard-list"
+            >
+              <div class="table-loading">
+                <span class="button-loader"></span>
+                Stok yoxlanılır...
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- =================================================
+           TEZ SATIŞ / POS
+      ================================================== -->
+      <section
+        id="panel-pos"
+        class="panel"
+        data-admin-panel="pos"
+      >
+        <div class="pos-grid">
+          <div class="pos-catalog-section">
+            <div class="card pos-toolbar-card">
+              <div class="toolbar">
+                <label class="search-control" for="posSearch">
+                  <span class="sr-only">
+                    Məhsul axtar
+                  </span>
+
+                  <input
+                    id="posSearch"
+                    class="input"
+                    type="search"
+                    placeholder="Məhsul axtar..."
+                    autocomplete="off"
+                  >
+                </label>
+
+                <select
+                  id="posCategory"
+                  class="input"
+                  aria-label="Məhsul kateqoriyası"
+                >
+                  <option value="all">
+                    Bütün kateqoriyalar
+                  </option>
+                </select>
+
+                <select
+                  id="posMember"
+                  class="input"
+                  aria-label="Müştəri seç"
+                >
+                  <option value="">
+                    Anonim müştəri
+                  </option>
+                </select>
+
+                <button
+                  id="posCreateMemberButton"
+                  class="btn btn-outline"
+                  type="button"
+                >
+                  + Üzv
+                </button>
+              </div>
+            </div>
+
+            <div
+              id="posProducts"
+              class="catalog-grid pos-products-grid"
+              aria-live="polite"
+              aria-busy="true"
+            >
+              <div class="skeleton pos-product-skeleton"></div>
+              <div class="skeleton pos-product-skeleton"></div>
+              <div class="skeleton pos-product-skeleton"></div>
+              <div class="skeleton pos-product-skeleton"></div>
+              <div class="skeleton pos-product-skeleton"></div>
+              <div class="skeleton pos-product-skeleton"></div>
+            </div>
+
+            <div
+              id="posProductsEmpty"
+              class="empty-state"
+              hidden
+            >
+              <h3>Məhsul tapılmadı</h3>
+
+              <p>
+                Axtarış və kateqoriya filtrini dəyişin.
+              </p>
+            </div>
+          </div>
+
+          <aside class="card pos-cart-card">
+            <div class="card-header">
+              <div>
+                <span class="section-kicker">
+                  Cari satış
+                </span>
+
+                <h2>
+                  Səbət
+                </h2>
+              </div>
+
+              <button
+                id="clearCartButton"
+                class="btn btn-small btn-danger"
+                type="button"
+              >
+                Təmizlə
+              </button>
+            </div>
+
+            <div
+              id="selectedPosMember"
+              class="selected-customer-card"
+              hidden
+            >
+              <div>
+                <span class="muted">
+                  Müştəri
+                </span>
+
+                <strong id="selectedPosMemberName">
+                  —
+                </strong>
+              </div>
+
+              <button
+                id="clearPosMemberButton"
+                class="icon-btn"
+                type="button"
+                aria-label="Müştərini sil"
+              >
+                ×
+              </button>
+            </div>
+
+            <div
+              id="cartLines"
+              class="cart-lines"
+            >
+              <div class="empty-state empty-state--compact">
+                <h3>Səbət boşdur</h3>
+
+                <p>
+                  Satış üçün məhsul seçin.
+                </p>
+              </div>
+            </div>
+
+            <div class="pos-cart-summary">
+              <div class="summary-row">
+                <span>Aralıq cəm</span>
+                <strong id="cartSubtotal">0.00 AZN</strong>
+              </div>
+
+              <label
+                class="summary-row summary-row--discount"
+                for="cartDiscount"
+              >
+                <span>Endirim</span>
+
+                <input
+                  id="cartDiscount"
+                  class="input input-compact"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value="0"
+                  aria-label="Endirim məbləği"
+                >
+              </label>
+
+              <div class="summary-row total">
+                <span>Yekun</span>
+                <span id="cartTotal">0.00 AZN</span>
+              </div>
+            </div>
+
+            <div class="form-grid pos-payment-form">
+              <label class="field" for="paymentMethod">
+                <span>
+                  Ödəniş üsulu
+                </span>
+
+                <select
+                  id="paymentMethod"
+                  class="input"
+                >
+                  <option value="cash">
+                    Nağd
+                  </option>
+
+                  <option value="card">
+                    Kart
+                  </option>
+
+                  <option value="transfer">
+                    Köçürmə
+                  </option>
+                </select>
+              </label>
+
+              <label class="field" for="paymentStatus">
+                <span>
+                  Ödəniş statusu
+                </span>
+
+                <select
+                  id="paymentStatus"
+                  class="input"
+                >
+                  <option value="paid">
+                    Ödənilib
+                  </option>
+
+                  <option value="debt">
+                    Borca yaz
+                  </option>
+                </select>
+              </label>
+
+              <label class="field" for="saleNote">
+                <span>
+                  Qeyd
+                </span>
+
+                <textarea
+                  id="saleNote"
+                  class="input"
+                  rows="2"
+                  maxlength="300"
+                  placeholder="Satış haqqında qeyd..."
+                ></textarea>
+              </label>
+
+              <div
+                id="posMessage"
+                class="form-message"
+                role="alert"
+                aria-live="assertive"
+                hidden
+              ></div>
+
+              <button
+                id="completeSaleButton"
+                class="btn btn-primary btn-large"
+                type="button"
+              >
+                <span class="button-label">
+                  Satışı tamamla
+                </span>
+
+                <span
+                  class="button-loader"
+                  aria-hidden="true"
+                  hidden
+                ></span>
+              </button>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- =================================================
+           GİRİŞ QEYDİYYATI
+      ================================================== -->
+      <section
+        id="panel-attendance"
+        class="panel"
+        data-admin-panel="attendance"
+      >
+        <div class="grid grid-2 admin-attendance-layout">
+          <section class="card neon">
+            <div class="card-header">
+              <div>
+                <span class="section-kicker">
+                  Zala giriş
+                </span>
+
+                <h2>
+                  Üzvü qeyd et
+                </h2>
+              </div>
+            </div>
+
+            <form
+              id="attendanceForm"
+              class="form-grid"
+              novalidate
+            >
+              <label class="field" for="attendanceMemberSearch">
+                <span>
+                  Üzv axtar
+                </span>
+
+                <input
+                  id="attendanceMemberSearch"
+                  class="input"
+                  type="search"
+                  placeholder="Ad, telefon və ya email..."
+                  autocomplete="off"
+                >
+              </label>
+
+              <div
+                id="attendanceMemberResults"
+                class="member-search-results"
+              ></div>
+
+              <input
+                id="attendanceMemberId"
+                name="member_id"
+                type="hidden"
+              >
+
+              <div
+                id="attendanceSelectedMember"
+                class="selected-member-card"
+                hidden
+              >
+                <img
+                  id="attendanceSelectedAvatar"
+                  src="assets/img/logo.png"
+                  alt=""
+                >
+
+                <div>
+                  <strong id="attendanceSelectedName">
+                    —
+                  </strong>
+
+                  <span id="attendanceSelectedDetails">
+                    —
+                  </span>
+                </div>
+
+                <button
+                  id="clearAttendanceMember"
+                  class="icon-btn"
+                  type="button"
+                  aria-label="Üzv seçimini sil"
+                >
+                  ×
+                </button>
+              </div>
+
+              <label class="field" for="attendancePaymentMethod">
+                <span>
+                  Günlük giriş ödənişi
+                </span>
+
+                <select
+                  id="attendancePaymentMethod"
+                  class="input"
+                >
+                  <option value="cash">
+                    Nağd
+                  </option>
+
+                  <option value="card">
+                    Kart
+                  </option>
+
+                  <option value="transfer">
+                    Köçürmə
+                  </option>
+                </select>
+              </label>
+
+              <div
+                id="attendanceMessage"
+                class="form-message"
+                role="alert"
+                aria-live="assertive"
+                hidden
+              ></div>
+
+              <button
+                id="attendanceSubmitButton"
+                class="btn btn-primary btn-large"
+                type="submit"
+              >
+                <span class="button-label">
+                  Girişi qeydə al
+                </span>
+
+                <span
+                  class="button-loader"
+                  aria-hidden="true"
+                  hidden
+                ></span>
+              </button>
+            </form>
+          </section>
+
+          <section class="card">
+            <div class="card-header">
+              <div>
+                <span class="section-kicker">
+                  Bu gün
+                </span>
+
+                <h2>
+                  Son girişlər
+                </h2>
+              </div>
+
+              <span
+                id="todayAttendanceCount"
+                class="badge"
+              >
+                0 giriş
+              </span>
+            </div>
+
+            <div
+              id="todayAttendanceList"
+              class="dashboard-list"
+            >
+              <div class="table-loading">
+                <span class="button-loader"></span>
+                Girişlər yüklənir...
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- =================================================
+           ÜZVLƏR
+      ================================================== -->
+      <section
+        id="panel-members"
+        class="panel"
+        data-admin-panel="members"
+      >
+        <div class="toolbar admin-toolbar">
+          <button
+            id="openNewMemberButton"
+            class="btn btn-primary"
+            type="button"
+          >
+            + Yeni üzv
+          </button>
+
+          <label class="search-control" for="membersSearch">
+            <span class="sr-only">
+              Üzv axtar
+            </span>
+
+            <input
+              id="membersSearch"
+              class="input"
+              type="search"
+              placeholder="Ad, telefon və ya email..."
+              autocomplete="off"
+            >
+          </label>
+
+          <select
+            id="membersStatusFilter"
+            class="input"
+            aria-label="Üzv statusu"
+          >
+            <option value="all">
+              Bütün üzvlər
+            </option>
+
+            <option value="active">
+              Aktiv hesablar
+            </option>
+
+            <option value="inactive">
+              Bloklanmış hesablar
+            </option>
+
+            <option value="manual">
+              Əllə əlavə edilənlər
+            </option>
+
+            <option value="registered">
+              Email hesabı olanlar
+            </option>
+          </select>
+
+          <button
+            id="refreshMembersButton"
+            class="btn btn-outline"
+            type="button"
+          >
+            Yenilə
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Üzv</th>
+                <th>Telefon</th>
+                <th>Email</th>
+                <th>Abunəlik</th>
+                <th>Borc</th>
+                <th>Status</th>
+                <th>Qeydiyyat</th>
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody id="membersTable">
+              <tr>
+                <td colspan="8">
+                  <div class="table-loading">
+                    <span class="button-loader"></span>
+                    Üzvlər yüklənir...
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div
+          id="membersEmpty"
+          class="empty-state"
+          hidden
+        >
+          <h3>Üzv tapılmadı</h3>
+
+          <p>
+            Filtrləri dəyişin və ya yeni üzv əlavə edin.
+          </p>
+        </div>
+      </section>
+
+      <!-- =================================================
+           ABUNƏLİKLƏR
+      ================================================== -->
+      <section
+        id="panel-memberships"
+        class="panel"
+        data-admin-panel="memberships"
+      >
+        <div class="toolbar admin-toolbar">
+          <button
+            id="openMembershipButton"
+            class="btn btn-primary"
+            type="button"
+          >
+            + Yeni abunəlik
+          </button>
+
+          <label class="search-control" for="membershipSearch">
+            <span class="sr-only">
+              Abunəlik üzrə üzv axtar
+            </span>
+
+            <input
+              id="membershipSearch"
+              class="input"
+              type="search"
+              placeholder="Üzv axtar..."
+              autocomplete="off"
+            >
+          </label>
+
+          <select
+            id="membershipStatusFilter"
+            class="input"
+            aria-label="Abunəlik statusu"
+          >
+            <option value="all">
+              Bütün statuslar
+            </option>
+
+            <option value="active">
+              Aktiv
+            </option>
+
+            <option value="critical">
+              3 gün və az
+            </option>
+
+            <option value="warning">
+              7 gün və az
+            </option>
+
+            <option value="expired">
+              Vaxtı bitib
+            </option>
+          </select>
+
+          <select
+            id="membershipPlanFilter"
+            class="input"
+            aria-label="Üzvlük planı"
+          >
+            <option value="all">
+              Bütün planlar
+            </option>
+          </select>
+
+          <button
+            id="refreshMembershipsButton"
+            class="btn btn-outline"
+            type="button"
+          >
+            Yenilə
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Üzv</th>
+                <th>Plan</th>
+                <th>Başlama</th>
+                <th>Bitmə</th>
+                <th>Qalan gün</th>
+                <th>Ödəniş</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody id="membershipsTable">
+              <tr>
+                <td colspan="8">
+                  <div class="table-loading">
+                    <span class="button-loader"></span>
+                    Abunəliklər yüklənir...
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div
+          id="membershipsEmpty"
+          class="empty-state"
+          hidden
+        >
+          <h3>Abunəlik tapılmadı</h3>
+
+          <p>
+            Yeni abunəlik yaradın və ya filtrləri dəyişin.
+          </p>
+        </div>
+      </section>
+
+      <!-- =================================================
+           BORCLAR
+      ================================================== -->
+      <section
+        id="panel-debts"
+        class="panel"
+        data-admin-panel="debts"
+      >
+        <div class="stats debt-summary-stats">
+          <article class="card stat">
+            <span class="stat-label">
+              Ümumi borc
+            </span>
+
+            <strong
+              id="totalDebtAmount"
+              class="stat-value"
+            >
+              0.00 AZN
+            </strong>
+          </article>
+
+          <article class="card stat">
+            <span class="stat-label">
+              Borclu üzv sayı
+            </span>
+
+            <strong
+              id="totalDebtorCount"
+              class="stat-value"
+            >
+              0
+            </strong>
+          </article>
+
+          <article class="card stat">
+            <span class="stat-label">
+              Bu ay borc ödənişi
+            </span>
+
+            <strong
+              id="monthlyDebtPayment"
+              class="stat-value"
+            >
+              0.00 AZN
+            </strong>
+          </article>
+        </div>
+
+        <div class="toolbar admin-toolbar">
+          <label class="search-control" for="debtSearch">
+            <span class="sr-only">
+              Borclu üzv axtar
+            </span>
+
+            <input
+              id="debtSearch"
+              class="input"
+              type="search"
+              placeholder="Ad və ya telefon..."
+              autocomplete="off"
+            >
+          </label>
+
+          <select
+            id="debtSort"
+            class="input"
+            aria-label="Borc sıralaması"
+          >
+            <option value="highest">
+              Ən yüksək borc
+            </option>
+
+            <option value="lowest">
+              Ən aşağı borc
+            </option>
+
+            <option value="recent">
+              Son yenilənən
+            </option>
+          </select>
+
+          <button
+            id="refreshDebtsButton"
+            class="btn btn-outline"
+            type="button"
+          >
+            Yenilə
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Üzv</th>
+                <th>Telefon</th>
+                <th>Email</th>
+                <th>Cari borc</th>
+                <th>Yenilənmə</th>
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody id="debtsTable">
+              <tr>
+                <td colspan="6">
+                  <div class="table-loading">
+                    <span class="button-loader"></span>
+                    Borclar yüklənir...
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div
+          id="debtsEmpty"
+          class="empty-state"
+          hidden
+        >
+          <h3>Borc yoxdur</h3>
+
+          <p>
+            Hazırda borc balansı olan üzv yoxdur.
+          </p>
+        </div>
+      </section>
+
+      <!-- =================================================
+           MƏHSULLAR
+      ================================================== -->
+      <section
+        id="panel-products"
+        class="panel"
+        data-admin-panel="products"
+      >
+        <div class="toolbar admin-toolbar">
+          <button
+            id="openProductButton"
+            class="btn btn-primary"
+            type="button"
+          >
+            + Yeni məhsul
+          </button>
+
+          <button
+            id="openStockEntryButton"
+            class="btn btn-outline"
+            type="button"
+          >
+            + Stok daxil et
+          </button>
+
+          <button
+            id="openStockAdjustmentButton"
+            class="btn btn-outline"
+            type="button"
+          >
+            Stok düzəlişi
+          </button>
+
+          <label class="search-control" for="productsSearch">
+            <span class="sr-only">
+              Məhsul axtar
+            </span>
+
+            <input
+              id="productsSearch"
+              class="input"
+              type="search"
+              placeholder="Məhsul və ya SKU..."
+              autocomplete="off"
+            >
+          </label>
+
+          <select
+            id="productSaleModeFilter"
+            class="input"
+            aria-label="Satış tipi"
+          >
+            <option value="all">
+              Bütün satış tipləri
+            </option>
+
+            <option value="unit">
+              Bağlı / ədəd
+            </option>
+
+            <option value="portion">
+              Açıq / porsiya
+            </option>
+          </select>
+
+          <select
+            id="productStockFilter"
+            class="input"
+            aria-label="Stok statusu"
+          >
+            <option value="all">
+              Bütün stoklar
+            </option>
+
+            <option value="normal">
+              Normal
+            </option>
+
+            <option value="low">
+              Azalan
+            </option>
+
+            <option value="out">
+              Bitmiş
+            </option>
+          </select>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Məhsul</th>
+                <th>SKU</th>
+                <th>Satış tipi</th>
+                <th>Qalıq</th>
+                <th>Porsiya</th>
+                <th>Satıla bilən say</th>
+                <th>Qiymət</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody id="productsTable">
+              <tr>
+                <td colspan="9">
+                  <div class="table-loading">
+                    <span class="button-loader"></span>
+                    Məhsullar yüklənir...
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div
+          id="productsAdminEmpty"
+          class="empty-state"
+          hidden
+        >
+          <h3>Məhsul tapılmadı</h3>
+
+          <p>
+            Yeni məhsul əlavə edin və ya filtrləri dəyişin.
+          </p>
+        </div>
+      </section>
+
+      <!-- =================================================
+           STOK HƏRƏKƏTLƏRİ
+      ================================================== -->
+      <section
+        id="panel-stock"
+        class="panel"
+        data-admin-panel="stock"
+      >
+        <div class="toolbar admin-toolbar">
+          <select
+            id="stockProductFilter"
+            class="input"
+            aria-label="Məhsula görə stok filtri"
+          >
+            <option value="all">
+              Bütün məhsullar
+            </option>
+          </select>
+
+          <select
+            id="stockMovementFilter"
+            class="input"
+            aria-label="Stok hərəkət tipi"
+          >
+            <option value="all">
+              Bütün hərəkətlər
+            </option>
+
+            <option value="purchase">
+              Alış
+            </option>
+
+            <option value="sale">
+              Satış
+            </option>
+
+            <option value="adjustment">
+              Düzəliş
+            </option>
+
+            <option value="waste">
+              İtki
+            </option>
+
+            <option value="return">
+              Qaytarma
+            </option>
+          </select>
+
+          <input
+            id="stockDateFrom"
+            class="input"
+            type="date"
+            aria-label="Başlama tarixi"
+          >
+
+          <input
+            id="stockDateTo"
+            class="input"
+            type="date"
+            aria-label="Bitmə tarixi"
+          >
+
+          <button
+            id="loadStockMovementsButton"
+            class="btn btn-outline"
+            type="button"
+          >
+            Göstər
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Tarix</th>
+                <th>Məhsul</th>
+                <th>Əməliyyat</th>
+                <th>Miqdar</th>
+                <th>Son qalıq</th>
+                <th>Vahid maya</th>
+                <th>Qeyd</th>
+              </tr>
+            </thead>
+
+            <tbody id="stockMovementsTable">
+              <tr>
+                <td colspan="7">
+                  <div class="table-loading">
+                    <span class="button-loader"></span>
+                    Stok hərəkətləri yüklənir...
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div
+          id="stockMovementsEmpty"
+          class="empty-state"
+          hidden
+        >
+          <h3>Stok hərəkəti yoxdur</h3>
+
+          <p>
+            Seçilmiş dövr üzrə əməliyyat tapılmadı.
+          </p>
+        </div>
+      </section>
+
+      <!-- =================================================
+           GÜNDƏLİK DƏFTƏR
+      ================================================== -->
+      <section
+        id="panel-ledger"
+        class="panel"
+        data-admin-panel="ledger"
+      >
+        <div class="stats ledger-summary-stats">
+          <article class="card stat">
+            <span class="stat-label">
+              Seçilmiş dövr mədaxil
+            </span>
+
+            <strong
+              id="ledgerIncomeTotal"
+              class="stat-value stat-value--success"
+            >
+              0.00 AZN
+            </strong>
+          </article>
+
+          <article class="card stat">
+            <span class="stat-label">
+              Seçilmiş dövr məxaric
+            </span>
+
+            <strong
+              id="ledgerExpenseTotal"
+              class="stat-value stat-value--danger"
+            >
+              0.00 AZN
+            </strong>
+          </article>
+
+          <article class="card stat">
+            <span class="stat-label">
+              Təmiz qazanc
+            </span>
+
+            <strong
+              id="ledgerProfitTotal"
+              class="stat-value"
+            >
+              0.00 AZN
+            </strong>
+          </article>
+        </div>
+
+        <div class="toolbar admin-toolbar">
+          <button
+            id="openLedgerButton"
+            class="btn btn-primary"
+            type="button"
+          >
+            + Yeni qeyd
+          </button>
+
+          <input
+            id="ledgerFrom"
+            class="input"
+            type="date"
+            aria-label="Başlama tarixi"
+          >
+
+          <input
+            id="ledgerTo"
+            class="input"
+            type="date"
+            aria-label="Bitmə tarixi"
+          >
+
+          <select
+            id="ledgerTypeFilter"
+            class="input"
+            aria-label="Dəftər əməliyyat tipi"
+          >
+            <option value="all">
+              Mədaxil və məxaric
+            </option>
+
+            <option value="income">
+              Yalnız mədaxil
+            </option>
+
+            <option value="expense">
+              Yalnız məxaric
+            </option>
+          </select>
+
+          <button
+            id="loadLedgerButton"
+            class="btn btn-outline"
+            type="button"
+          >
+            Göstər
+          </button>
+
+          <button
+            id="exportLedgerButton"
+            class="btn btn-outline"
+            type="button"
+          >
+            CSV ixrac
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Tarix</th>
+                <th>Tip</th>
+                <th>Kateqoriya</th>
+                <th>Açıqlama</th>
+                <th>Məbləğ</th>
+                <th>Mənbə</th>
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody id="ledgerTable">
+              <tr>
+                <td colspan="7">
+                  <div class="table-loading">
+                    <span class="button-loader"></span>
+                    Dəftər məlumatları yüklənir...
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div
+          id="ledgerEmpty"
+          class="empty-state"
+          hidden
+        >
+          <h3>Dəftər qeydi yoxdur</h3>
+
+          <p>
+            Seçilmiş dövr üzrə mədaxil və ya məxaric tapılmadı.
+          </p>
+        </div>
+      </section>
+
+      <!-- =================================================
+           HESABATLAR
+      ================================================== -->
+      <section
+        id="panel-reports"
+        class="panel"
+        data-admin-panel="reports"
+      >
+        <div class="toolbar admin-toolbar">
+          <input
+            id="reportFrom"
+            class="input"
+            type="date"
+            aria-label="Hesabat başlanğıc tarixi"
+          >
+
+          <input
+            id="reportTo"
+            class="input"
+            type="date"
+            aria-label="Hesabat bitmə tarixi"
+          >
+
+          <select
+            id="reportPeriodPreset"
+            class="input"
+            aria-label="Hazır hesabat dövrü"
+          >
+            <option value="custom">
+              Xüsusi tarix
+            </option>
+
+            <option value="today">
+              Bu gün
+            </option>
+
+            <option value="week">
+              Son 7 gün
+            </option>
+
+            <option value="month">
+              Bu ay
+            </option>
+
+            <option value="year">
+              Bu il
+            </option>
+          </select>
+
+          <button
+            id="loadReportsButton"
+            class="btn btn-primary"
+            type="button"
+          >
+            Hesabla
+          </button>
+
+          <button
+            id="printReportButton"
+            class="btn btn-outline"
+            type="button"
+          >
+            Çap et
+          </button>
+        </div>
+
+        <div
+          id="reportStats"
+          class="stats report-stats"
+        >
+          <article class="card stat">
+            <span class="stat-label">
+              Ümumi mədaxil
+            </span>
+
+            <strong
+              id="reportIncome"
+              class="stat-value stat-value--success"
+            >
+              0.00 AZN
+            </strong>
+          </article>
+
+          <article class="card stat">
+            <span class="stat-label">
+              Ümumi məxaric
+            </span>
+
+            <strong
+              id="reportExpense"
+              class="stat-value stat-value--danger"
+            >
+              0.00 AZN
+            </strong>
+          </article>
+
+          <article class="card stat">
+            <span class="stat-label">
+              Təmiz qazanc
+            </span>
+
+            <strong
+              id="reportProfit"
+              class="stat-value"
+            >
+              0.00 AZN
+            </strong>
+          </article>
+
+          <article class="card stat">
+            <span class="stat-label">
+              Satış sayı
+            </span>
+
+            <strong
+              id="reportSalesCount"
+              class="stat-value"
+            >
+              0
+            </strong>
+          </article>
+        </div>
+
+        <div class="grid grid-2 report-charts-grid">
+          <section class="card">
+            <div class="card-header">
+              <div>
+                <span class="section-kicker">
+                  Maliyyə
+                </span>
+
+                <h2>
+                  Mədaxil və məxaric
+                </h2>
+              </div>
+            </div>
+
+            <canvas
+              id="reportChart"
+              class="chart"
+              aria-label="Mədaxil və məxaric qrafiki"
+            ></canvas>
+
+            <div class="chart-legend">
+              <span>
+                <i class="chart-legend__income"></i>
+                Mədaxil
+              </span>
+
+              <span>
+                <i class="chart-legend__expense"></i>
+                Məxaric
+              </span>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-header">
+              <div>
+                <span class="section-kicker">
+                  Məhsullar
+                </span>
+
+                <h2>
+                  Ən çox satılanlar
+                </h2>
+              </div>
+            </div>
+
+            <div
+              id="topSellingProducts"
+              class="dashboard-list"
+            >
+              <div class="table-loading">
+                <span class="button-loader"></span>
+                Hesablanır...
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="grid grid-2 report-charts-grid">
+          <section class="card">
+            <div class="card-header">
+              <div>
+                <span class="section-kicker">
+                  Kateqoriyalar
+                </span>
+
+                <h2>
+                  Xərc bölgüsü
+                </h2>
+              </div>
+            </div>
+
+            <div
+              id="expenseCategorySummary"
+              class="dashboard-list"
+            >
+              <div class="table-loading">
+                <span class="button-loader"></span>
+                Hesablanır...
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-header">
+              <div>
+                <span class="section-kicker">
+                  Üzvlük
+                </span>
+
+                <h2>
+                  Abunəlik gəlirləri
+                </h2>
+              </div>
+            </div>
+
+            <div
+              id="membershipIncomeSummary"
+              class="dashboard-list"
+            >
+              <div class="table-loading">
+                <span class="button-loader"></span>
+                Hesablanır...
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- =================================================
+           MƏŞQÇİLƏR
+      ================================================== -->
+      <section
+        id="panel-trainers"
+        class="panel"
+        data-admin-panel="trainers"
+      >
+        <div class="toolbar admin-toolbar">
+          <button
+            id="openTrainerButton"
+            class="btn btn-primary"
+            type="button"
+          >
+            + Yeni məşqçi
+          </button>
+
+          <label class="search-control" for="trainerSearch">
+            <span class="sr-only">
+              Məşqçi axtar
+            </span>
+
+            <input
+              id="trainerSearch"
+              class="input"
+              type="search"
+              placeholder="Məşqçi adı və ixtisası..."
+              autocomplete="off"
+            >
+          </label>
+        </div>
+
+        <div
+          id="trainersAdminGrid"
+          class="grid grid-3 trainer-admin-grid"
+          aria-live="polite"
+        >
+          <div class="skeleton trainer-skeleton"></div>
+          <div class="skeleton trainer-skeleton"></div>
+          <div class="skeleton trainer-skeleton"></div>
+        </div>
+
+        <div
+          id="trainersAdminEmpty"
+          class="empty-state"
+          hidden
+        >
+          <h3>Məşqçi əlavə edilməyib</h3>
+
+          <p>
+            Saytda göstərmək üçün məşqçi kartı yaradın.
+          </p>
+        </div>
+      </section>
+
+      <!-- =================================================
+           TƏNZİMLƏMƏLƏR
+      ================================================== -->
+      <section
+        id="panel-settings"
+        class="panel"
+        data-admin-panel="settings"
+      >
+        <div class="grid grid-2 settings-grid">
+          <section class="card">
+            <div class="card-header">
+              <div>
+                <span class="section-kicker">
+                  Üzvlük planları
+                </span>
+
+                <h2>
+                  Qiymət və müddət
+                </h2>
+              </div>
+            </div>
+
+            <div
+              id="membershipPlansList"
+              class="settings-list"
+            >
+              <div class="table-loading">
+                <span class="button-loader"></span>
+                Planlar yüklənir...
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-header">
+              <div>
+                <span class="section-kicker">
+                  Sistem
+                </span>
+
+                <h2>
+                  Tətbiq məlumatları
+                </h2>
+              </div>
+            </div>
+
+            <div class="settings-information-list">
+              <div>
+                <span>Sayt ünvanı</span>
+
+                <strong>
+                  qerib-seferli.github.io/SKyFit
+                </strong>
+              </div>
+
+              <div>
+                <span>Supabase</span>
+
+                <strong class="status-success">
+                  Qoşulub
+                </strong>
+              </div>
+
+              <div>
+                <span>PWA</span>
+
+                <strong id="pwaSupportStatus">
+                  Yoxlanılır
+                </strong>
+              </div>
+
+              <div>
+                <span>Realtime</span>
+
+                <strong id="realtimeStatus">
+                  Yoxlanılır
+                </strong>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-header">
+              <div>
+                <span class="section-kicker">
+                  Təhlükəsizlik
+                </span>
+
+                <h2>
+                  Admin və işçi hesabları
+                </h2>
+              </div>
+
+              <button
+                id="openStaffButton"
+                class="btn btn-small btn-primary"
+                type="button"
+              >
+                + İşçi
+              </button>
+            </div>
+
+            <div
+              id="staffList"
+              class="settings-list"
+            >
+              <div class="table-loading">
+                <span class="button-loader"></span>
+                İşçi hesabları yüklənir...
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-header">
+              <div>
+                <span class="section-kicker">
+                  Məlumatların qorunması
+                </span>
+
+                <h2>
+                  Ehtiyat və ixrac
+                </h2>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <button
+                id="exportProductsButton"
+                class="btn btn-outline"
+                type="button"
+              >
+                Məhsulları CSV ixrac et
+              </button>
+
+              <button
+                id="exportMembersButton"
+                class="btn btn-outline"
+                type="button"
+              >
+                Üzvləri CSV ixrac et
+              </button>
+
+              <button
+                id="exportDebtsButton"
+                class="btn btn-outline"
+                type="button"
+              >
+                Borcları CSV ixrac et
+              </button>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- =====================================================
+       MOBİL ADMIN ALT NAVİQASİYA
+  ====================================================== -->
+  <nav
+    class="admin-mobile-navigation"
+    aria-label="Mobil admin menyusu"
+  >
+    <button
+      class="active"
+      type="button"
+      data-mobile-panel="dashboard"
+    >
+      <span aria-hidden="true">▦</span>
+      <small>Panel</small>
+    </button>
+
+    <button
+      type="button"
+      data-mobile-panel="pos"
+    >
+      <span aria-hidden="true">◉</span>
+      <small>Satış</small>
+    </button>
+
+    <button
+      type="button"
+      data-mobile-panel="members"
+    >
+      <span aria-hidden="true">♙</span>
+      <small>Üzvlər</small>
+    </button>
+
+    <button
+      type="button"
+      data-mobile-panel="ledger"
+    >
+      <span aria-hidden="true">≡</span>
+      <small>Dəftər</small>
+    </button>
+
+    <button
+      type="button"
+      data-mobile-panel="reports"
+    >
+      <span aria-hidden="true">⌁</span>
+      <small>Hesabat</small>
+    </button>
+  </nav>
+
+  <!-- =====================================================
+       ÜMUMİ MODAL
+  ====================================================== -->
+  <div
+    id="adminModal"
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="adminModalTitle"
+    hidden
+  >
+    <div
+      class="modal-backdrop"
+      data-close-modal
+    ></div>
+
+    <div class="card modal-card admin-modal-card">
+      <div class="modal-header">
+        <div>
+          <span
+            id="adminModalKicker"
+            class="section-kicker"
+          >
+            SKy Fit
+          </span>
+
+          <h2 id="adminModalTitle">
+            Yeni əməliyyat
+          </h2>
+        </div>
+
+        <button
+          class="icon-btn"
+          type="button"
+          aria-label="Pəncərəni bağla"
+          data-close-modal
+        >
+          ×
+        </button>
+      </div>
+
+      <div
+        id="adminModalContent"
+        class="modal-content"
+      ></div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       TƏSDİQ MODALI
+  ====================================================== -->
+  <div
+    id="confirmModal"
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="confirmModalTitle"
+    hidden
+  >
+    <div
+      class="modal-backdrop"
+      data-close-confirm
+    ></div>
+
+    <div class="card modal-card confirm-modal-card">
+      <div class="confirm-modal-icon" aria-hidden="true">
+        !
+      </div>
+
+      <h2 id="confirmModalTitle">
+        Əməliyyatı təsdiq edin
+      </h2>
+
+      <p id="confirmModalText">
+        Bu əməliyyatı davam etdirmək istəyirsiniz?
+      </p>
+
+      <div class="confirm-modal-actions">
+        <button
+          id="cancelConfirmButton"
+          class="btn btn-outline"
+          type="button"
+          data-close-confirm
+        >
+          Ləğv et
+        </button>
+
+        <button
+          id="acceptConfirmButton"
+          class="btn btn-danger"
+          type="button"
+        >
+          Təsdiq et
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       TOAST MESAJLARI
+  ====================================================== -->
+  <div
+    id="toastContainer"
+    class="toast-wrap"
+    aria-live="polite"
+    aria-atomic="true"
+  ></div>
+
+  <noscript>
+    <div class="noscript-message">
+      Admin panelin işləməsi üçün JavaScript aktiv olmalıdır.
+    </div>
+  </noscript>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+  <script src="js/config.js"></script>
+
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>
