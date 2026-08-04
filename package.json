@@ -1,33 +1,69 @@
 {
   "name": "sky-fit-desktop",
-  "version": "1.0.0",
-  "description": "SKy Fit fitness management system",
+  "version": "1.1.0",
+  "private": true,
+  "description": "SKy Fit fitness club management, membership and sales system",
+  "author": {
+    "name": "Qərib Səfərli"
+  },
+  "license": "UNLICENSED",
   "main": "electron/main.js",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --win nsis"
+    "dev": "cross-env SKYFIT_DEVTOOLS=true electron .",
+    "pack": "electron-builder --dir",
+    "build:win": "electron-builder --win nsis",
+    "dist": "npm run build:win"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "electron": "^37.2.0",
     "electron-builder": "^26.0.12"
   },
   "build": {
     "appId": "az.skyfit.club",
     "productName": "SKy Fit",
+    "copyright": "Copyright © 2026 Qərib Səfərli",
+    "asar": true,
+    "compression": "maximum",
     "directories": {
-      "output": "dist"
+      "output": "dist",
+      "buildResources": "assets/img"
     },
     "files": [
-      "**/*",
-      "!dist/**"
+      "electron/**/*",
+      "assets/img/logo.png",
+      "package.json",
+      "!dist/**",
+      "!node_modules/.cache/**",
+      "!**/*.map",
+      "!README.md"
     ],
     "win": {
-      "target": "nsis",
-      "icon": "assets/img/logo.png"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/img/logo.png",
+      "artifactName": "SKy-Fit-Setup-${version}-${arch}.${ext}"
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "SKy Fit",
+      "deleteAppDataOnUninstall": false,
+      "runAfterFinish": true,
+      "installerIcon": "assets/img/logo.png",
+      "uninstallerIcon": "assets/img/logo.png",
+      "installerHeaderIcon": "assets/img/logo.png"
     }
   }
 }
