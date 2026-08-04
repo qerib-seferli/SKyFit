@@ -1,58 +1,411 @@
-# SKy Fit — Real Supabase/PWA/Electron sistemi
+## 1. Layihə haqqında
 
-## 1. Supabase qur
-1. Supabase Dashboard-da yeni project yarat.
-2. SQL Editor → New query.
-3. `supabase/database.sql` faylının hamısını yapışdır və **Run** et.
-4. Authentication → Providers → Email aktiv qalsın.
-5. Authentication → URL Configuration:
-   - Site URL: GitHub Pages ünvanın
-   - Redirect URLs: `https://USERNAME.github.io/REPO/**`
-6. Project Settings → API:
-   - Project URL
-   - anon public key
-   məlumatlarını götür.
-7. `js/config.js` daxilində `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SITE_URL` dəyiş.
+```text
+SKy Fit
 
-## 2. İlk admin
-1. Saytda `register.html` ilə öz hesabını yarat.
-2. Email təsdiqini et.
-3. SQL Editor-da:
-```sql
-update public.profiles
-set role='admin'
-where email='SENIN_EMAILIN';
+Professional Fitness Club Management System
+
+Web + Progressive Web App (PWA) + Desktop (Electron)
+
+Developed by
+Qərib Səfərli
+Senior Full Stack Developer
 ```
-4. Çıxış edib yenidən daxil ol və `admin.html` aç.
 
-## 3. Məhsul məntiqi
-- `unit`: Su, bağlı protein, aksesuar. Hər satış stokdan say qədər düşür.
-- `portion`: Açıq protein, kreatin, amino.
-  - `stock_quantity`: 5000 qram və ya 500 tablet.
-  - `portion_size`: 30 qram və ya 6 tablet.
-  - `portion_price`: 2 və ya 3 AZN.
-  - 1 porsiya satılanda stokdan `portion_size` avtomatik düşür.
+---
 
-## 4. GitHub Pages
-Bütün faylları repository kökünə yüklə.
-Settings → Pages → Deploy from branch → main / root.
+## 2. Layihənin məqsədi
 
-## 5. PWA
-GitHub Pages HTTPS ilə açıldıqdan sonra brauzerdə Install App görünəcək.
-Service worker statik faylları cache edir; Supabase sorğuları həmişə onlayn qalır.
+Qısa izah:
 
-## 6. Windows EXE
-Node.js quraşdır.
-Terminal:
-```bash
+* Fitness klubunun tam idarə olunması
+* Üzvlük sistemi
+* Satış sistemi
+* Borc/Nisyə sistemi
+* Kassanın idarəsi
+* Mədaxil/Məxaric
+* Məhsul anbarı
+* Hesabatlar
+* PWA
+* Desktop proqramı
+* Mobil uyğunluq
+* Realtime Supabase
+
+---
+
+## 3. İstifadə olunan texnologiyalar
+
+```text
+Frontend
+---------
+HTML5
+CSS3
+JavaScript ES2024
+
+Backend
+--------
+Supabase
+
+Database
+---------
+PostgreSQL
+
+Storage
+--------
+Supabase Storage
+
+Authentication
+--------------
+Supabase Auth
+
+Realtime
+---------
+Supabase Realtime
+
+Desktop
+--------
+Electron
+
+PWA
+----
+Manifest
+Service Worker
+
+Hosting
+-------
+GitHub Pages
+```
+
+---
+
+## 4. Hazır funksiyalar
+
+### Üzvlər
+
+✔ Email qeydiyyatı
+
+✔ Login
+
+✔ Profil
+
+✔ Avatar
+
+✔ Şifrə dəyişmə
+
+✔ Şifrə bərpası
+
+✔ Abunəlik
+
+✔ Borc
+
+✔ Alış tarixçəsi
+
+---
+
+### Admin
+
+✔ Dashboard
+
+✔ POS
+
+✔ Məhsullar
+
+✔ Anbar
+
+✔ Borclar
+
+✔ Hesabat
+
+✔ Mədaxil
+
+✔ Məxaric
+
+✔ Üzvlər
+
+✔ Abunəlik
+
+✔ Realtime
+
+---
+
+### Məhsullar
+
+✔ Hazır məhsul
+
+✔ Açıq məhsul
+
+✔ Porsiya satışı
+
+✔ Qram satışı
+
+✔ Tablet satışı
+
+✔ Protein
+
+✔ Kreatin
+
+✔ Amino
+
+✔ Stok azalması
+
+✔ Az stok xəbərdarlığı
+
+---
+
+### Maliyyə
+
+✔ Nağd
+
+✔ Kart
+
+✔ Köçürmə
+
+✔ Borca yaz
+
+✔ Borc ödənişi
+
+✔ Gündəlik kassa
+
+✔ Aylıq hesabat
+
+---
+
+### PWA
+
+✔ Offline Cache
+
+✔ Install
+
+✔ Android
+
+✔ iPhone
+
+✔ Push Notification hazır
+
+---
+
+### Desktop
+
+✔ Windows EXE
+
+✔ Electron
+
+✔ Auto Update üçün hazır struktur
+
+---
+
+## 5. Database
+
+Burada yazılacaq:
+
+```text
+profiles
+
+products
+
+sales
+
+sale_items
+
+memberships
+
+membership_plans
+
+ledger_entries
+
+debt_accounts
+
+debt_transactions
+
+attendance
+
+trainers
+
+stock_movements
+```
+
+---
+
+## 6. İstifadəçi rolları
+
+### Admin
+
+Tam səlahiyyət
+
+Bütün məlumatlar
+
+SQL
+
+İşçilər
+
+Məhsullar
+
+Kassa
+
+Silmə
+
+Redaktə
+
+---
+
+### Staff
+
+Satış
+
+Məhsul satışı
+
+Abunəlik
+
+Üzv əlavə etmə
+
+Borc
+
+Kassa
+
+Ancaq sistem parametrlərini dəyişə bilməz.
+
+---
+
+### Member
+
+Profil
+
+Abunə
+
+Borc
+
+Alışlar
+
+Profil yeniləmə
+
+---
+
+## 7. Gələcək versiyalar
+
+Burada "Roadmap" olacaq.
+
+Məsələn
+
+```text
+□ QR giriş
+
+□ Turniket
+
+□ Barkod
+
+□ NFC Kart
+
+□ Face Recognition
+
+□ AI Trainer
+
+□ Diet Plan
+
+□ Workout Generator
+
+□ Mobile Push
+
+□ WhatsApp Reminder
+
+□ SMS Reminder
+
+□ Online Payment
+
+□ Stripe
+
+□ Kapital Bank
+
+□ Loyalty System
+
+□ Bonus
+
+□ Referral
+
+□ Cloud Backup
+
+□ Multi Branch
+
+□ Franchise
+
+□ API
+
+□ BI Dashboard
+
+□ AI Reports
+```
+
+---
+
+## 8. Layihə strukturu
+
+```
+assets/
+
+css/
+
+js/
+
+electron/
+
+supabase/
+
+README.md
+
+package.json
+
+manifest.json
+
+service-worker.js
+```
+
+---
+
+## 9. Qurulması
+
+Burada yalnız developer üçün:
+
+```
+git clone
+
 npm install
-npm run start
-npm run dist
-```
-Installer `dist/` qovluğunda yaranacaq.
 
-## Təhlükəsizlik
-- Brauzerdə yalnız `anon key` istifadə olunur.
-- `service_role` key heç vaxt frontendə yazılmamalıdır.
-- Məlumat icazələri RLS ilə qorunur.
-- POS/stok/borc əməliyyatları SQL RPC daxilində transaction kimi işləyir.
+npm start
+
+npm run build:win
+```
+
+---
+
+## 10. GitHub Pages
+
+Burada yazılacaq
+
+```
+https://qerib-seferli.github.io/SKyFit
+```
+
+---
+
+## 11. Demo
+
+```
+Web
+
+PWA
+
+Desktop
+```
+
+---
+
+## 12. Müəllif
+
+```
+Senior Full Stack Developer
+
+Qərib Səfərli
+
+Azerbaijan
+
+2026
+```
