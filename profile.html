@@ -1,1 +1,1299 @@
-<!doctype html><html lang="az" data-theme="dark"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="css/style.css"><title>Profil | SKy Fit</title></head><body><div data-header></div><main class="section"><div class="shell"><div class="card profile-hero neon"><img id="avatar" class="avatar"><div><span class="muted">Xoş gəldiniz</span><h1 id="profileName">Üzv</h1><p id="profileEmail" class="muted"></p></div><button class="btn btn-danger" style="margin-left:auto" onclick="SkyAuth.logout()">Çıxış</button></div><div class="grid grid-2" style="margin-top:14px"><div id="membership"></div><div id="debt"></div></div><div class="grid grid-2" style="margin-top:14px"><section class="card"><h2>Profil məlumatları</h2><form id="profileForm" class="form-grid"><input class="input" name="full_name" placeholder="Ad Soyad"><input class="input" name="phone" placeholder="Telefon"><input class="input" name="birth_date" type="date"><textarea class="input" name="address" placeholder="Ünvan"></textarea><input class="input" name="avatar" type="file" accept="image/*"><button class="btn btn-primary">Yadda saxla</button></form></section><section class="card"><h2>Son alışlar</h2><div class="table-wrap"><table class="table" style="min-width:100%"><thead><tr><th>Tarix</th><th>Məbləğ</th><th>Status</th></tr></thead><tbody id="history"></tbody></table></div></section></div></div></main><div data-footer></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/config.js"></script><script type="module" src="js/profile.js"></script><script type="module" src="js/auth.js"></script></body></html>
+<!doctype html>
+<html lang="az" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#05070b">
+  <meta name="color-scheme" content="dark light">
+
+  <meta
+    name="description"
+    content="SKy Fit üzv kabineti — abunəlik, borc, profil və alış tarixçəsi."
+  >
+
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/img/logo.png">
+  <link rel="apple-touch-icon" href="assets/img/logo.png">
+
+  <link
+    rel="preload"
+    href="assets/img/profile-background.jpg"
+    as="image"
+  >
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <title>Şəxsi kabinet | SKy Fit</title>
+</head>
+
+<body class="profile-page">
+  <a class="skip-link" href="#profileMain">
+    Şəxsi kabinetə keç
+  </a>
+
+  <!-- =====================================================
+       YÜKLƏNMƏ EKRANI
+  ====================================================== -->
+  <div
+    id="appLoader"
+    class="app-loader"
+    role="status"
+    aria-live="polite"
+    aria-label="Şəxsi kabinet yüklənir"
+  >
+    <div class="app-loader__content">
+      <div class="app-loader__media">
+        <img
+          class="sky-loader-image"
+          src="assets/img/fitness-loader.gif"
+          alt=""
+          width="96"
+          height="96"
+        >
+      </div>
+
+      <strong class="app-loader__title">
+        SKy Fit
+      </strong>
+
+      <span class="app-loader__text">
+        Şəxsi kabinet hazırlanır...
+      </span>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       ŞƏBƏKƏ STATUSU
+  ====================================================== -->
+  <div
+    id="networkStatus"
+    class="network-status"
+    role="status"
+    aria-live="polite"
+    hidden
+  >
+    İnternet bağlantısı yoxdur
+  </div>
+
+  <!-- =====================================================
+       SABİT NAVBAR
+       core.js sessiyaya və rola uyğun yeniləyəcək.
+  ====================================================== -->
+  <div data-header>
+    <header class="topbar" id="siteHeader">
+      <div class="shell topbar-inner">
+        <a
+          class="brand"
+          href="index.html"
+          aria-label="SKy Fit ana səhifə"
+        >
+          <img
+            src="assets/img/logo.png"
+            alt="SKy Fit loqosu"
+            width="44"
+            height="44"
+          >
+
+          <span class="brand__text">
+            <strong>
+              <span>SKy</span> Fit
+            </strong>
+
+            <small>Üzv kabineti</small>
+          </span>
+        </a>
+
+        <nav class="nav" aria-label="Əsas naviqasiya">
+          <a href="index.html">
+            Ana səhifə
+          </a>
+
+          <a href="index.html#products-section">
+            Məhsullar
+          </a>
+
+          <a href="sevimliler.html">
+            Sevimlilər
+          </a>
+
+          <a class="active" href="profile.html">
+            Profil
+          </a>
+        </nav>
+
+        <div class="topbar-actions">
+          <button
+            id="pwaInstallButton"
+            class="icon-btn pwa-install-button"
+            type="button"
+            aria-label="SKy Fit tətbiqini quraşdır"
+            title="Tətbiqi quraşdır"
+            hidden
+          >
+            <span aria-hidden="true">↓</span>
+          </button>
+
+          <button
+            id="themeToggle"
+            class="icon-btn"
+            type="button"
+            aria-label="Ağ və qara rejimi dəyiş"
+            title="Görünüş rejimi"
+          >
+            <span class="theme-icon" aria-hidden="true">◐</span>
+          </button>
+
+          <button
+            id="logoutButton"
+            class="btn btn-small btn-danger"
+            type="button"
+          >
+            Çıxış
+          </button>
+        </div>
+      </div>
+    </header>
+  </div>
+
+  <main id="profileMain">
+    <!-- ===================================================
+         PROFİL HERO
+    ==================================================== -->
+    <section class="profile-cover-section">
+      <div class="profile-cover-background" aria-hidden="true"></div>
+
+      <div class="shell profile-cover-content">
+        <div class="profile-identity">
+          <div class="profile-avatar-wrapper">
+            <img
+              id="avatar"
+              class="avatar avatar-large"
+              src="assets/img/logo.png"
+              alt="Üzv profil şəkli"
+              width="120"
+              height="120"
+            >
+
+            <span
+              id="profileOnlineIndicator"
+              class="profile-online-indicator"
+              title="Aktiv hesab"
+              aria-label="Aktiv hesab"
+            ></span>
+          </div>
+
+          <div class="profile-identity__content">
+            <span class="eyebrow">
+              SKy Fit üzvü
+            </span>
+
+            <h1 id="profileName">
+              Üzv
+            </h1>
+
+            <p id="profileEmail">
+              Məlumat yüklənir...
+            </p>
+
+            <div class="profile-meta">
+              <span id="profilePhone">
+                Telefon əlavə edilməyib
+              </span>
+
+              <span aria-hidden="true">•</span>
+
+              <span id="profileMemberSince">
+                Qeydiyyat tarixi yüklənir
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-cover-actions">
+          <button
+            id="scrollToProfileForm"
+            class="btn btn-outline"
+            type="button"
+          >
+            Profili düzəlt
+          </button>
+
+          <a
+            class="btn btn-whatsapp"
+            href="https://wa.me/994555240160?text=Salam%2C%20SKy%20Fit%20%C3%BCzvl%C3%BCy%C3%BCm%20haqq%C4%B1nda%20m%C9%99lumat%20almaq%20ist%C9%99yir%C9%99m."
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Dəstək
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================
+         ƏSAS PROFİL MƏZMUNU
+    ==================================================== -->
+    <section class="section profile-dashboard-section">
+      <div class="shell">
+        <!-- Xəbərdarlıq -->
+        <div
+          id="profileAlert"
+          class="profile-alert"
+          role="alert"
+          aria-live="polite"
+          hidden
+        >
+          <div class="profile-alert__icon" aria-hidden="true">
+            !
+          </div>
+
+          <div>
+            <strong id="profileAlertTitle">
+              Xəbərdarlıq
+            </strong>
+
+            <p id="profileAlertText"></p>
+          </div>
+
+          <a
+            id="profileAlertAction"
+            class="btn btn-small"
+            href="https://wa.me/994555240160"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Əlaqə saxla
+          </a>
+        </div>
+
+        <!-- Üst statistika kartları -->
+        <div class="profile-stats-grid">
+          <article class="card profile-stat-card profile-stat-card--membership">
+            <div class="profile-stat-card__header">
+              <span class="profile-stat-card__icon" aria-hidden="true">
+                ◷
+              </span>
+
+              <span class="badge" id="membershipStatusBadge">
+                Yüklənir
+              </span>
+            </div>
+
+            <span class="profile-stat-card__label">
+              Cari abunəlik
+            </span>
+
+            <strong
+              id="membershipPlanName"
+              class="profile-stat-card__value"
+            >
+              —
+            </strong>
+
+            <p id="membershipDateRange">
+              Abunəlik məlumatı yüklənir
+            </p>
+          </article>
+
+          <article class="card profile-stat-card profile-stat-card--days">
+            <div class="profile-stat-card__header">
+              <span class="profile-stat-card__icon" aria-hidden="true">
+                ⌛
+              </span>
+
+              <span id="membershipDayStatus" class="badge">
+                —
+              </span>
+            </div>
+
+            <span class="profile-stat-card__label">
+              Qalan müddət
+            </span>
+
+            <strong
+              id="membershipDaysLeft"
+              class="profile-stat-card__value"
+            >
+              —
+            </strong>
+
+            <p>
+              Bitməsinə qalan təqvim günü
+            </p>
+          </article>
+
+          <article class="card profile-stat-card profile-stat-card--debt">
+            <div class="profile-stat-card__header">
+              <span class="profile-stat-card__icon" aria-hidden="true">
+                ₼
+              </span>
+
+              <span id="debtStatusBadge" class="badge">
+                Yüklənir
+              </span>
+            </div>
+
+            <span class="profile-stat-card__label">
+              Cari borc
+            </span>
+
+            <strong
+              id="currentDebtAmount"
+              class="profile-stat-card__value"
+            >
+              0.00 AZN
+            </strong>
+
+            <p>
+              Məhsul və üzvlük üzrə ümumi balans
+            </p>
+          </article>
+
+          <article class="card profile-stat-card profile-stat-card--purchases">
+            <div class="profile-stat-card__header">
+              <span class="profile-stat-card__icon" aria-hidden="true">
+                ▦
+              </span>
+
+              <span class="badge">
+                Tarixçə
+              </span>
+            </div>
+
+            <span class="profile-stat-card__label">
+              Ümumi alış sayı
+            </span>
+
+            <strong
+              id="totalPurchaseCount"
+              class="profile-stat-card__value"
+            >
+              0
+            </strong>
+
+            <p>
+              Hesaba bağlı tamamlanmış satışlar
+            </p>
+          </article>
+        </div>
+
+        <!-- =================================================
+             ABUNƏLİK VƏ BORC
+        ================================================== -->
+        <div class="grid grid-2 profile-primary-grid">
+          <section
+            id="membership"
+            class="card profile-membership-card neon"
+            aria-labelledby="membershipCardTitle"
+          >
+            <div class="card-header">
+              <div>
+                <span class="section-kicker">
+                  Üzvlük
+                </span>
+
+                <h2 id="membershipCardTitle">
+                  Cari abunəlik
+                </h2>
+              </div>
+
+              <span
+                id="membershipCardBadge"
+                class="badge"
+              >
+                Yüklənir
+              </span>
+            </div>
+
+            <div
+              id="membershipContent"
+              class="membership-profile-content"
+              aria-live="polite"
+              aria-busy="true"
+            >
+              <div class="skeleton skeleton-line"></div>
+              <div class="skeleton skeleton-line short"></div>
+              <div class="skeleton membership-progress-skeleton"></div>
+            </div>
+
+            <div
+              id="membershipEmpty"
+              class="empty-state empty-state--compact"
+              hidden
+            >
+              <h3>Aktiv abunəlik yoxdur</h3>
+
+              <p>
+                Aylıq və ya günlük üzvlük üçün zal administrasiyası
+                ilə əlaqə saxlayın.
+              </p>
+
+              <a
+                class="btn btn-primary"
+                href="https://wa.me/994555240160?text=Salam%2C%20SKy%20Fit%20%C3%BCzvl%C3%BCy%C3%BC%20almaq%20ist%C9%99yir%C9%99m."
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Üzvlük al
+              </a>
+            </div>
+          </section>
+
+          <section
+            id="debt"
+            class="card profile-debt-card"
+            aria-labelledby="debtCardTitle"
+          >
+            <div class="card-header">
+              <div>
+                <span class="section-kicker">
+                  Maliyyə
+                </span>
+
+                <h2 id="debtCardTitle">
+                  Borc balansı
+                </h2>
+              </div>
+
+              <span
+                id="debtCardBadge"
+                class="badge"
+              >
+                Yüklənir
+              </span>
+            </div>
+
+            <div
+              id="debtContent"
+              class="debt-profile-content"
+              aria-live="polite"
+              aria-busy="true"
+            >
+              <div class="debt-total-box">
+                <span>Cari borc</span>
+
+                <strong id="debtCardAmount">
+                  0.00 AZN
+                </strong>
+              </div>
+
+              <p id="debtDescription">
+                Borc məlumatları yüklənir...
+              </p>
+
+              <a
+                id="debtPaymentContact"
+                class="btn btn-outline"
+                href="https://wa.me/994555240160?text=Salam%2C%20borc%20balans%C4%B1mla%20ba%C4%9Fl%C4%B1%20m%C9%99lumat%20almaq%20ist%C9%99yir%C9%99m."
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Ödəniş üçün əlaqə
+              </a>
+            </div>
+          </section>
+        </div>
+
+        <!-- =================================================
+             TAB NAVİQASİYASI
+        ================================================== -->
+        <div
+          class="profile-tabs"
+          role="tablist"
+          aria-label="Profil bölmələri"
+        >
+          <button
+            id="profileTabButton"
+            class="profile-tab active"
+            type="button"
+            role="tab"
+            aria-selected="true"
+            aria-controls="profileInformationPanel"
+            data-profile-tab="information"
+          >
+            Profil məlumatları
+          </button>
+
+          <button
+            id="purchaseTabButton"
+            class="profile-tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            aria-controls="purchaseHistoryPanel"
+            data-profile-tab="purchases"
+          >
+            Alış tarixçəsi
+          </button>
+
+          <button
+            id="debtTabButton"
+            class="profile-tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            aria-controls="debtHistoryPanel"
+            data-profile-tab="debts"
+          >
+            Borc tarixçəsi
+          </button>
+
+          <button
+            id="attendanceTabButton"
+            class="profile-tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            aria-controls="attendanceHistoryPanel"
+            data-profile-tab="attendance"
+          >
+            Gəliş tarixçəsi
+          </button>
+        </div>
+
+        <!-- =================================================
+             PROFİL MƏLUMATLARI PANELİ
+        ================================================== -->
+        <section
+          id="profileInformationPanel"
+          class="profile-tab-panel active"
+          role="tabpanel"
+          aria-labelledby="profileTabButton"
+          data-profile-panel="information"
+        >
+          <div class="grid grid-2 profile-content-grid">
+            <article
+              id="profileFormCard"
+              class="card"
+            >
+              <div class="card-header">
+                <div>
+                  <span class="section-kicker">
+                    Şəxsi məlumatlar
+                  </span>
+
+                  <h2>
+                    Profili yenilə
+                  </h2>
+                </div>
+              </div>
+
+              <form
+                id="profileForm"
+                class="form-grid"
+                enctype="multipart/form-data"
+                novalidate
+              >
+                <label class="field" for="profileFullName">
+                  <span>
+                    Ad və soyad
+                  </span>
+
+                  <div class="input-shell">
+                    <span
+                      class="input-shell__icon"
+                      aria-hidden="true"
+                    >
+                      ♙
+                    </span>
+
+                    <input
+                      id="profileFullName"
+                      class="input input-with-icon"
+                      name="full_name"
+                      type="text"
+                      autocomplete="name"
+                      minlength="3"
+                      maxlength="100"
+                      placeholder="Ad və soyad"
+                      required
+                    >
+                  </div>
+
+                  <small
+                    id="profileFullNameError"
+                    class="field-error"
+                    aria-live="polite"
+                  ></small>
+                </label>
+
+                <div class="grid grid-2">
+                  <label class="field" for="profilePhoneInput">
+                    <span>
+                      Telefon
+                    </span>
+
+                    <div class="input-shell">
+                      <span
+                        class="input-shell__icon"
+                        aria-hidden="true"
+                      >
+                        ☎
+                      </span>
+
+                      <input
+                        id="profilePhoneInput"
+                        class="input input-with-icon"
+                        name="phone"
+                        type="tel"
+                        inputmode="tel"
+                        autocomplete="tel"
+                        maxlength="20"
+                        placeholder="+994 55 000 00 00"
+                      >
+                    </div>
+                  </label>
+
+                  <label class="field" for="profileBirthDate">
+                    <span>
+                      Doğum tarixi
+                    </span>
+
+                    <div class="input-shell">
+                      <span
+                        class="input-shell__icon"
+                        aria-hidden="true"
+                      >
+                        ◷
+                      </span>
+
+                      <input
+                        id="profileBirthDate"
+                        class="input input-with-icon"
+                        name="birth_date"
+                        type="date"
+                        autocomplete="bday"
+                      >
+                    </div>
+                  </label>
+                </div>
+
+                <label class="field" for="profileAddress">
+                  <span>
+                    Ünvan
+                  </span>
+
+                  <div class="input-shell input-shell--textarea">
+                    <span
+                      class="input-shell__icon"
+                      aria-hidden="true"
+                    >
+                      ●
+                    </span>
+
+                    <textarea
+                      id="profileAddress"
+                      class="input input-with-icon"
+                      name="address"
+                      rows="3"
+                      maxlength="300"
+                      autocomplete="street-address"
+                      placeholder="Yaşadığınız ünvan"
+                    ></textarea>
+                  </div>
+                </label>
+
+                <label class="field" for="profileAvatarInput">
+                  <span>
+                    Profil şəkli
+                  </span>
+
+                  <div class="file-control">
+                    <input
+                      id="profileAvatarInput"
+                      name="avatar"
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                    >
+
+                    <span class="file-control__button">
+                      Şəkil seç
+                    </span>
+
+                    <span
+                      id="profileAvatarFileName"
+                      class="file-control__name"
+                    >
+                      Fayl seçilməyib
+                    </span>
+                  </div>
+
+                  <small class="field-hint">
+                    JPG, PNG və ya WEBP. Maksimum 5 MB.
+                  </small>
+                </label>
+
+                <div
+                  id="profileAvatarPreviewWrapper"
+                  class="avatar-preview"
+                  hidden
+                >
+                  <img
+                    id="profileAvatarPreview"
+                    src="assets/img/logo.png"
+                    alt="Yeni profil şəkli önizləmə"
+                  >
+
+                  <div>
+                    <strong>Yeni şəkil</strong>
+                    <small>Yadda saxladıqda profilə əlavə olunacaq.</small>
+                  </div>
+
+                  <button
+                    id="removeProfileAvatar"
+                    class="btn btn-small btn-danger"
+                    type="button"
+                  >
+                    Sil
+                  </button>
+                </div>
+
+                <div
+                  id="profileFormMessage"
+                  class="form-message"
+                  role="alert"
+                  aria-live="assertive"
+                  hidden
+                ></div>
+
+                <button
+                  id="profileSaveButton"
+                  class="btn btn-primary"
+                  type="submit"
+                >
+                  <span class="button-label">
+                    Məlumatları yadda saxla
+                  </span>
+
+                  <span
+                    class="button-loader"
+                    aria-hidden="true"
+                    hidden
+                  ></span>
+                </button>
+              </form>
+            </article>
+
+            <article class="card profile-contact-card">
+              <div class="card-header">
+                <div>
+                  <span class="section-kicker">
+                    Zal məlumatları
+                  </span>
+
+                  <h2>
+                    Əlaqə və iş saatları
+                  </h2>
+                </div>
+              </div>
+
+              <div class="profile-contact-list">
+                <a
+                  href="tel:+994555240160"
+                  class="profile-contact-item"
+                >
+                  <span aria-hidden="true">☎</span>
+
+                  <div>
+                    <strong>Telefon</strong>
+                    <small>+994 55 524 01 60</small>
+                  </div>
+                </a>
+
+                <a
+                  href="https://wa.me/994555240160"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="profile-contact-item"
+                >
+                  <span aria-hidden="true">◉</span>
+
+                  <div>
+                    <strong>WhatsApp</strong>
+                    <small>Mesaj göndər</small>
+                  </div>
+                </a>
+
+                <a
+                  href="https://maps.app.goo.gl/7UHf6EtpCbsbXBF26"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="profile-contact-item"
+                >
+                  <span aria-hidden="true">●</span>
+
+                  <div>
+                    <strong>Ünvan</strong>
+
+                    <small>
+                      Bərdə ş. Avtovağzalın yanı,
+                      Güloğlular küçəsi döngəsi
+                    </small>
+                  </div>
+                </a>
+
+                <div class="profile-contact-item">
+                  <span aria-hidden="true">◷</span>
+
+                  <div>
+                    <strong>İş saatları</strong>
+                    <small>Hər gün: 08:00 – 23:00</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="profile-social-actions">
+                <a
+                  class="btn btn-outline"
+                  href="https://www.instagram.com/sky_fit_club__/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Instagram
+                </a>
+
+                <a
+                  class="btn btn-outline"
+                  href="https://www.tiktok.com/@sky_fit_club"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  TikTok
+                </a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- =================================================
+             ALIŞ TARİXÇƏSİ PANELİ
+        ================================================== -->
+        <section
+          id="purchaseHistoryPanel"
+          class="profile-tab-panel"
+          role="tabpanel"
+          aria-labelledby="purchaseTabButton"
+          data-profile-panel="purchases"
+          hidden
+        >
+          <article class="card">
+            <div class="card-header">
+              <div>
+                <span class="section-kicker">
+                  Satışlar
+                </span>
+
+                <h2>
+                  Son alışlar
+                </h2>
+              </div>
+
+              <button
+                id="refreshPurchaseHistory"
+                class="btn btn-small btn-outline"
+                type="button"
+              >
+                Yenilə
+              </button>
+            </div>
+
+            <div class="table-wrap">
+              <table class="table profile-history-table">
+                <thead>
+                  <tr>
+                    <th>Qəbz</th>
+                    <th>Tarix</th>
+                    <th>Məbləğ</th>
+                    <th>Ödəniş</th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr>
+                </thead>
+
+                <tbody id="history">
+                  <tr>
+                    <td colspan="6">
+                      <div class="table-loading">
+                        <span class="button-loader"></span>
+                        Alış tarixçəsi yüklənir...
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div
+              id="purchaseHistoryEmpty"
+              class="empty-state empty-state--compact"
+              hidden
+            >
+              <h3>Alış tarixçəsi yoxdur</h3>
+
+              <p>
+                Hesabınıza bağlı məhsul satışı qeydə alınmayıb.
+              </p>
+
+              <a
+                class="btn btn-primary"
+                href="index.html#products-section"
+              >
+                Məhsullara bax
+              </a>
+            </div>
+          </article>
+        </section>
+
+        <!-- =================================================
+             BORC TARİXÇƏSİ PANELİ
+        ================================================== -->
+        <section
+          id="debtHistoryPanel"
+          class="profile-tab-panel"
+          role="tabpanel"
+          aria-labelledby="debtTabButton"
+          data-profile-panel="debts"
+          hidden
+        >
+          <article class="card">
+            <div class="card-header">
+              <div>
+                <span class="section-kicker">
+                  Nisyə və ödənişlər
+                </span>
+
+                <h2>
+                  Borc tarixçəsi
+                </h2>
+              </div>
+
+              <span
+                id="debtHistoryBalance"
+                class="badge"
+              >
+                0.00 AZN
+              </span>
+            </div>
+
+            <div class="table-wrap">
+              <table class="table profile-history-table">
+                <thead>
+                  <tr>
+                    <th>Tarix</th>
+                    <th>Əməliyyat</th>
+                    <th>Açıqlama</th>
+                    <th>Məbləğ</th>
+                    <th>Ödəniş üsulu</th>
+                  </tr>
+                </thead>
+
+                <tbody id="debtHistoryBody">
+                  <tr>
+                    <td colspan="5">
+                      <div class="table-loading">
+                        <span class="button-loader"></span>
+                        Borc tarixçəsi yüklənir...
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div
+              id="debtHistoryEmpty"
+              class="empty-state empty-state--compact"
+              hidden
+            >
+              <h3>Borc tarixçəsi yoxdur</h3>
+
+              <p>
+                Hesabınıza borc və ya borc ödənişi qeydə alınmayıb.
+              </p>
+            </div>
+          </article>
+        </section>
+
+        <!-- =================================================
+             GƏLİŞ TARİXÇƏSİ PANELİ
+        ================================================== -->
+        <section
+          id="attendanceHistoryPanel"
+          class="profile-tab-panel"
+          role="tabpanel"
+          aria-labelledby="attendanceTabButton"
+          data-profile-panel="attendance"
+          hidden
+        >
+          <article class="card">
+            <div class="card-header">
+              <div>
+                <span class="section-kicker">
+                  Zal gəlişləri
+                </span>
+
+                <h2>
+                  Gəliş tarixçəsi
+                </h2>
+              </div>
+
+              <span
+                id="attendanceCountBadge"
+                class="badge"
+              >
+                0 gəliş
+              </span>
+            </div>
+
+            <div class="table-wrap">
+              <table class="table profile-history-table">
+                <thead>
+                  <tr>
+                    <th>Tarix</th>
+                    <th>Saat</th>
+                    <th>Giriş növü</th>
+                    <th>Məbləğ</th>
+                  </tr>
+                </thead>
+
+                <tbody id="attendanceHistoryBody">
+                  <tr>
+                    <td colspan="4">
+                      <div class="table-loading">
+                        <span class="button-loader"></span>
+                        Gəliş tarixçəsi yüklənir...
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div
+              id="attendanceHistoryEmpty"
+              class="empty-state empty-state--compact"
+              hidden
+            >
+              <h3>Gəliş tarixçəsi yoxdur</h3>
+
+              <p>
+                Zala giriş məlumatı hələ qeydə alınmayıb.
+              </p>
+            </div>
+          </article>
+        </section>
+
+        <!-- =================================================
+             MƏHSULLAR
+        ================================================== -->
+        <section class="profile-products-section">
+          <div class="section-head">
+            <div>
+              <span class="section-kicker">
+                SKy Fit mağazası
+              </span>
+
+              <h2>
+                Zal məhsulları
+              </h2>
+
+              <p>
+                Stokda olan məhsullara bax və WhatsApp vasitəsilə
+                sifariş et.
+              </p>
+            </div>
+
+            <a
+              class="btn btn-outline"
+              href="index.html#products-section"
+            >
+              Hamısına bax
+            </a>
+          </div>
+
+          <div
+            id="profileProducts"
+            class="grid grid-4 product-grid"
+            aria-live="polite"
+            aria-busy="true"
+          >
+            <div class="skeleton product-skeleton"></div>
+            <div class="skeleton product-skeleton"></div>
+            <div class="skeleton product-skeleton"></div>
+            <div class="skeleton product-skeleton"></div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <!-- =====================================================
+       FOOTER
+  ====================================================== -->
+  <div data-footer>
+    <footer class="footer">
+      <div class="shell footer-layout">
+        <div class="footer-brand">
+          <a class="brand" href="index.html">
+            <img
+              src="assets/img/logo.png"
+              alt="SKy Fit"
+              width="44"
+              height="44"
+            >
+
+            <span class="brand__text">
+              <strong>
+                <span>SKy</span> Fit
+              </strong>
+
+              <small>Premium Fitness Club</small>
+            </span>
+          </a>
+
+          <p>
+            Üzvlük, borc və alış məlumatlarını rahat izləmək üçün
+            rəqəmsal şəxsi kabinet.
+          </p>
+        </div>
+
+        <div class="footer-links">
+          <strong>Şəxsi kabinet</strong>
+          <a href="#profileFormCard">Profil məlumatları</a>
+          <a href="#membership">Abunəlik</a>
+          <a href="#debt">Borc balansı</a>
+          <a href="index.html#products-section">Məhsullar</a>
+        </div>
+
+        <div class="footer-links">
+          <strong>Əlaqə</strong>
+
+          <a href="tel:+994555240160">
+            +994 55 524 01 60
+          </a>
+
+          <a
+            href="https://maps.app.goo.gl/7UHf6EtpCbsbXBF26"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Bərdə şəhəri
+          </a>
+        </div>
+      </div>
+
+      <div class="shell footer-bottom">
+        <span>
+          © <span id="currentYear"></span> SKy Fit.
+          Bütün hüquqlar qorunur.
+        </span>
+
+        <span>
+          Web · PWA · Desktop
+        </span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- =====================================================
+       MOBİL ALT NAVİQASİYA
+  ====================================================== -->
+  <nav
+    class="mobile-bottom-navigation"
+    aria-label="Mobil alt menyu"
+  >
+    <a href="index.html">
+      <span aria-hidden="true">⌂</span>
+      <small>Ana səhifə</small>
+    </a>
+
+    <a href="index.html#products-section">
+      <span aria-hidden="true">▦</span>
+      <small>Məhsullar</small>
+    </a>
+
+    <a href="sevimliler.html">
+      <span aria-hidden="true">♡</span>
+      <small>Sevimlilər</small>
+    </a>
+
+    <a class="active" href="profile.html">
+      <span aria-hidden="true">♙</span>
+      <small>Profil</small>
+    </a>
+  </nav>
+
+  <!-- =====================================================
+       SATIŞ DETALLARI MODALI
+  ====================================================== -->
+  <div
+    id="purchaseDetailsModal"
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="purchaseDetailsTitle"
+    hidden
+  >
+    <div class="modal-backdrop" data-close-modal></div>
+
+    <div class="card modal-card">
+      <div class="modal-header">
+        <div>
+          <span class="section-kicker">
+            Qəbz detalları
+          </span>
+
+          <h2 id="purchaseDetailsTitle">
+            Alış məlumatı
+          </h2>
+        </div>
+
+        <button
+          class="icon-btn"
+          type="button"
+          aria-label="Pəncərəni bağla"
+          data-close-modal
+        >
+          ×
+        </button>
+      </div>
+
+      <div
+        id="purchaseDetailsContent"
+        class="modal-content"
+      ></div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       TOAST MESAJLARI
+  ====================================================== -->
+  <div
+    id="toastContainer"
+    class="toast-wrap"
+    aria-live="polite"
+    aria-atomic="true"
+  ></div>
+
+  <noscript>
+    <div class="noscript-message">
+      Şəxsi kabinetin işləməsi üçün JavaScript aktiv olmalıdır.
+    </div>
+  </noscript>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+  <script src="js/config.js"></script>
+
+  <script type="module" src="js/profile.js"></script>
+</body>
+</html>
