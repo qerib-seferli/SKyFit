@@ -1,1 +1,557 @@
-<!doctype html><html lang="az" data-theme="dark"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="css/style.css"><title>Sevimlilər | SKy Fit</title></head><body><div data-header></div><main class="section"><div class="shell"><div class="section-head"><div><h1>Sevimlilər</h1><p>Sonra baxmaq üçün saxladığınız məhsullar.</p></div></div><div id="favorites" class="grid grid-4"></div></div></main><div data-footer></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/config.js"></script><script type="module" src="js/favorites.js"></script></body></html>
+<!doctype html>
+<html lang="az" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#05070b">
+  <meta name="color-scheme" content="dark light">
+
+  <meta
+    name="description"
+    content="SKy Fit sevimli məhsullar səhifəsi."
+  >
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/img/logo.png">
+  <link rel="apple-touch-icon" href="assets/img/logo.png">
+
+  <link
+    rel="preload"
+    href="assets/img/gym-section-2.jpg"
+    as="image"
+  >
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <title>Sevimlilər | SKy Fit</title>
+</head>
+
+<body class="favorites-page">
+  <a class="skip-link" href="#favoritesMain">
+    Sevimlilərə keç
+  </a>
+
+  <!-- =====================================================
+       YÜKLƏNMƏ EKRANI
+  ====================================================== -->
+  <div
+    id="appLoader"
+    class="app-loader"
+    role="status"
+    aria-live="polite"
+    aria-label="Sevimlilər yüklənir"
+  >
+    <div class="app-loader__content">
+      <div class="app-loader__media">
+        <img
+          class="sky-loader-image"
+          src="assets/img/fitness-loader.gif"
+          alt=""
+          width="96"
+          height="96"
+        >
+      </div>
+
+      <strong class="app-loader__title">
+        SKy Fit
+      </strong>
+
+      <span class="app-loader__text">
+        Sevimlilər hazırlanır...
+      </span>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       ŞƏBƏKƏ STATUSU
+  ====================================================== -->
+  <div
+    id="networkStatus"
+    class="network-status"
+    role="status"
+    aria-live="polite"
+    hidden
+  >
+    İnternet bağlantısı yoxdur
+  </div>
+
+  <!-- =====================================================
+       SABİT NAVBAR
+  ====================================================== -->
+  <div data-header>
+    <header class="topbar" id="siteHeader">
+      <div class="shell topbar-inner">
+        <a
+          class="brand"
+          href="index.html"
+          aria-label="SKy Fit ana səhifə"
+        >
+          <img
+            src="assets/img/logo.png"
+            alt="SKy Fit loqosu"
+            width="44"
+            height="44"
+          >
+
+          <span class="brand__text">
+            <strong>
+              <span>SKy</span> Fit
+            </strong>
+
+            <small>Premium Fitness Club</small>
+          </span>
+        </a>
+
+        <nav class="nav" aria-label="Əsas naviqasiya">
+          <a href="index.html">
+            Ana səhifə
+          </a>
+
+          <a href="index.html#products-section">
+            Məhsullar
+          </a>
+
+          <a href="index.html#trainers-section">
+            Məşqçilər
+          </a>
+
+          <a class="active" href="sevimliler.html">
+            Sevimlilər
+          </a>
+
+          <a href="profile.html">
+            Profil
+          </a>
+        </nav>
+
+        <div class="topbar-actions">
+          <button
+            id="pwaInstallButton"
+            class="icon-btn pwa-install-button"
+            type="button"
+            aria-label="SKy Fit tətbiqini quraşdır"
+            title="Tətbiqi quraşdır"
+            hidden
+          >
+            <span aria-hidden="true">↓</span>
+          </button>
+
+          <button
+            id="themeToggle"
+            class="icon-btn"
+            type="button"
+            aria-label="Ağ və qara rejimi dəyiş"
+            title="Görünüş rejimi"
+          >
+            <span class="theme-icon" aria-hidden="true">◐</span>
+          </button>
+
+          <a
+            id="headerProfileLink"
+            class="btn btn-small btn-outline"
+            href="login.html"
+          >
+            Daxil ol
+          </a>
+
+          <button
+            id="mobileMenuButton"
+            class="icon-btn mobile-menu-button"
+            type="button"
+            aria-label="Mobil menyunu aç"
+            aria-controls="mobileNavigation"
+            aria-expanded="false"
+          >
+            <span aria-hidden="true">☰</span>
+          </button>
+        </div>
+      </div>
+
+      <nav
+        id="mobileNavigation"
+        class="mobile-navigation"
+        aria-label="Mobil naviqasiya"
+        hidden
+      >
+        <a href="index.html">Ana səhifə</a>
+        <a href="index.html#products-section">Məhsullar</a>
+        <a href="index.html#trainers-section">Məşqçilər</a>
+        <a class="active" href="sevimliler.html">Sevimlilər</a>
+        <a href="profile.html">Profil</a>
+      </nav>
+    </header>
+  </div>
+
+  <main id="favoritesMain">
+    <!-- ===================================================
+         HERO
+    ==================================================== -->
+    <section class="favorites-hero">
+      <div class="favorites-hero__background" aria-hidden="true"></div>
+
+      <div class="shell favorites-hero__content">
+        <div>
+          <span class="eyebrow">
+            Saxladığınız məhsullar
+          </span>
+
+          <h1>
+            Sevimlilər
+          </h1>
+
+          <p>
+            Sonra baxmaq və sifariş etmək üçün seçdiyiniz
+            məhsullar burada görünür.
+          </p>
+        </div>
+
+        <div class="favorites-hero__summary card neon">
+          <span class="muted">
+            Seçilmiş məhsul sayı
+          </span>
+
+          <strong id="favoritesCount">
+            0
+          </strong>
+
+          <a
+            class="btn btn-outline"
+            href="index.html#products-section"
+          >
+            Məhsullara bax
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================
+         SEVİMLİLƏR MƏZMUNU
+    ==================================================== -->
+    <section class="section favorites-content-section">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <span class="section-kicker">
+              SKy Fit mağazası
+            </span>
+
+            <h2>
+              Seçilmiş məhsullar
+            </h2>
+
+            <p>
+              Qiymət və stok məlumatları Supabase-dən real vaxtda
+              yenilənir.
+            </p>
+          </div>
+
+          <div class="section-head-actions">
+            <label class="search-control" for="favoritesSearch">
+              <span class="sr-only">
+                Sevimli məhsul axtar
+              </span>
+
+              <input
+                id="favoritesSearch"
+                class="input"
+                type="search"
+                placeholder="Sevimlilərdə axtar..."
+                autocomplete="off"
+              >
+            </label>
+
+            <button
+              id="clearFavoritesButton"
+              class="btn btn-danger"
+              type="button"
+              disabled
+            >
+              Hamısını sil
+            </button>
+          </div>
+        </div>
+
+        <div
+          id="favorites"
+          class="grid grid-4 product-grid"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <div class="skeleton product-skeleton"></div>
+          <div class="skeleton product-skeleton"></div>
+          <div class="skeleton product-skeleton"></div>
+          <div class="skeleton product-skeleton"></div>
+        </div>
+
+        <div
+          id="favoritesEmpty"
+          class="empty-state favorites-empty"
+          hidden
+        >
+          <img
+            class="sky-loader-image empty-state__image"
+            src="assets/img/fitness-loader.gif"
+            alt=""
+            width="96"
+            height="96"
+          >
+
+          <h3>
+            Sevimli məhsul yoxdur
+          </h3>
+
+          <p>
+            Məhsul kartındakı ürək düyməsinə basaraq məhsulları
+            bu səhifəyə əlavə edə bilərsiniz.
+          </p>
+
+          <a
+            class="btn btn-primary"
+            href="index.html#products-section"
+          >
+            Məhsullara bax
+          </a>
+        </div>
+
+        <div
+          id="favoritesSearchEmpty"
+          class="empty-state"
+          hidden
+        >
+          <h3>
+            Axtarış nəticəsi yoxdur
+          </h3>
+
+          <p>
+            Başqa məhsul adı ilə yenidən yoxlayın.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================
+         SİFARİŞ MƏLUMATI
+    ==================================================== -->
+    <section class="section favorites-order-section">
+      <div class="shell favorites-order-card card neon">
+        <div class="favorites-order-card__content">
+          <span class="section-kicker">
+            Sürətli sifariş
+          </span>
+
+          <h2>
+            Seçdiyiniz məhsulu WhatsApp ilə sifariş edin
+          </h2>
+
+          <p>
+            Məhsul kartındakı sifariş düyməsi sizi birbaşa
+            SKy Fit WhatsApp xəttinə yönləndirəcək.
+          </p>
+
+          <div class="actions">
+            <a
+              class="btn btn-whatsapp"
+              href="https://wa.me/994555240160?text=Salam%2C%20SKy%20Fit%20m%C9%99hsullar%C4%B1%20haqq%C4%B1nda%20m%C9%99lumat%20almaq%20ist%C9%99yir%C9%99m."
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              WhatsApp
+            </a>
+
+            <a
+              class="btn btn-outline"
+              href="tel:+994555240160"
+            >
+              Zəng et
+            </a>
+          </div>
+        </div>
+
+        <div class="favorites-order-card__media">
+          <img
+            src="assets/img/gym-section-2.jpg"
+            alt="SKy Fit idman məhsulları"
+            loading="lazy"
+          >
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- =====================================================
+       FOOTER
+  ====================================================== -->
+  <div data-footer>
+    <footer class="footer">
+      <div class="shell footer-layout">
+        <div class="footer-brand">
+          <a class="brand" href="index.html">
+            <img
+              src="assets/img/logo.png"
+              alt="SKy Fit"
+              width="44"
+              height="44"
+            >
+
+            <span class="brand__text">
+              <strong>
+                <span>SKy</span> Fit
+              </strong>
+
+              <small>Premium Fitness Club</small>
+            </span>
+          </a>
+
+          <p>
+            İdman məhsulları, üzvlük və rəqəmsal şəxsi kabinet
+            bir sistemdə.
+          </p>
+        </div>
+
+        <div class="footer-links">
+          <strong>Keçidlər</strong>
+          <a href="index.html">Ana səhifə</a>
+          <a href="index.html#products-section">Məhsullar</a>
+          <a href="profile.html">Şəxsi kabinet</a>
+          <a href="login.html">Daxil ol</a>
+        </div>
+
+        <div class="footer-links">
+          <strong>Əlaqə</strong>
+
+          <a href="tel:+994555240160">
+            +994 55 524 01 60
+          </a>
+
+          <a
+            href="https://maps.app.goo.gl/7UHf6EtpCbsbXBF26"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Bərdə şəhəri
+          </a>
+        </div>
+      </div>
+
+      <div class="shell footer-bottom">
+        <span>
+          © <span id="currentYear"></span> SKy Fit.
+          Bütün hüquqlar qorunur.
+        </span>
+
+        <span>
+          Web · PWA · Desktop
+        </span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- =====================================================
+       MOBİL ALT NAVİQASİYA
+  ====================================================== -->
+  <nav
+    class="mobile-bottom-navigation"
+    aria-label="Mobil alt menyu"
+  >
+    <a href="index.html">
+      <span aria-hidden="true">⌂</span>
+      <small>Ana səhifə</small>
+    </a>
+
+    <a href="index.html#products-section">
+      <span aria-hidden="true">▦</span>
+      <small>Məhsullar</small>
+    </a>
+
+    <a class="active" href="sevimliler.html">
+      <span aria-hidden="true">♥</span>
+      <small>Sevimlilər</small>
+    </a>
+
+    <a href="profile.html">
+      <span aria-hidden="true">♙</span>
+      <small>Profil</small>
+    </a>
+  </nav>
+
+  <!-- =====================================================
+       TƏSDİQ MODALI
+  ====================================================== -->
+  <div
+    id="clearFavoritesModal"
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="clearFavoritesTitle"
+    hidden
+  >
+    <div
+      class="modal-backdrop"
+      data-close-favorites-modal
+    ></div>
+
+    <div class="card modal-card confirm-modal-card">
+      <div class="confirm-modal-icon" aria-hidden="true">
+        !
+      </div>
+
+      <h2 id="clearFavoritesTitle">
+        Sevimliləri təmizlə
+      </h2>
+
+      <p>
+        Bütün seçilmiş məhsulları sevimlilərdən silmək
+        istədiyinizə əminsiniz?
+      </p>
+
+      <div class="confirm-modal-actions">
+        <button
+          id="cancelClearFavoritesButton"
+          class="btn btn-outline"
+          type="button"
+          data-close-favorites-modal
+        >
+          Ləğv et
+        </button>
+
+        <button
+          id="confirmClearFavoritesButton"
+          class="btn btn-danger"
+          type="button"
+        >
+          Hamısını sil
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       TOAST MESAJLARI
+  ====================================================== -->
+  <div
+    id="toastContainer"
+    class="toast-wrap"
+    aria-live="polite"
+    aria-atomic="true"
+  ></div>
+
+  <noscript>
+    <div class="noscript-message">
+      Sevimlilər səhifəsinin işləməsi üçün JavaScript aktiv olmalıdır.
+    </div>
+  </noscript>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+  <script src="js/config.js"></script>
+
+  <script type="module" src="js/favorites.js"></script>
+</body>
+</html>
