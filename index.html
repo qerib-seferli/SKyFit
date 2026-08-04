@@ -1,1 +1,948 @@
-<!doctype html><html lang="az" data-theme="dark"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#05070b"><link rel="manifest" href="manifest.json"><link rel="icon" href="assets/img/logo.png"><link rel="stylesheet" href="css/style.css"><title>SKy Fit | Premium Fitness Club</title></head><body><div data-header></div><section class="hero"><div class="shell hero-content"><span class="eyebrow">Bərdənin premium fitness məkanı</span><h1>Gücünü<br><span style="color:var(--yellow)">yenidən qur.</span></h1><p>Müasir məşq mühiti, peşəkar məşqçilər, günlük və aylıq üzvlük, idman qidaları və rahat rəqəmsal üzv kabineti.</p><div class="actions"><a class="btn btn-primary" href="register.html">Üzv ol</a><a class="btn" href="https://wa.me/994555240160" target="_blank">WhatsApp</a><a class="btn btn-ghost" href="https://maps.app.goo.gl/7UHf6EtpCbsbXBF26" target="_blank">Konum</a></div></div></section><main><section class="section"><div class="shell"><div class="section-head"><div><h2>Satışda olan məhsullar</h2><p>Qiymət və stok admin paneldən real vaxtda yenilənir.</p></div><a class="btn" href="sevimliler.html">Sevimlilər</a></div><div id="products" class="grid grid-4"></div></div></section><section class="section" style="background:var(--surface)"><div class="shell"><div class="section-head"><div><h2>Peşəkar məşqçilər</h2><p>Məqsədinizə uyğun proqram və nəzarət.</p></div></div><div id="trainers" class="grid grid-3"></div></div></section><section class="section"><div class="shell grid grid-3"><a class="card neon" href="https://www.instagram.com/sky_fit_club__/" target="_blank"><h3>Instagram</h3><p class="muted">@sky_fit_club__</p></a><a class="card neon" href="https://www.tiktok.com/@sky_fit_club" target="_blank"><h3>TikTok</h3><p class="muted">@sky_fit_club</p></a><a class="card neon" href="https://wa.me/994555240160" target="_blank"><h3>WhatsApp</h3><p class="muted">+994 55 524 01 60</p></a></div></section></main><div data-footer></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/config.js"></script><script type="module" src="js/app.js"></script><script>if('serviceWorker'in navigator)navigator.serviceWorker.register('service-worker.js')</script></body></html>
+<!doctype html>
+<html lang="az" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#05070b">
+  <meta name="color-scheme" content="dark light">
+
+  <meta
+    name="description"
+    content="SKy Fit — Bərdə şəhərində premium fitnes zalı, aylıq və günlük üzvlük, peşəkar məşqçilər və idman məhsulları."
+  >
+
+  <meta
+    name="keywords"
+    content="SKy Fit, Bərdə fitnes zalı, idman zalı, fitness, protein, kreatin, məşqçi"
+  >
+
+  <meta name="author" content="SKy Fit">
+
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="az_AZ">
+  <meta property="og:site_name" content="SKy Fit">
+  <meta property="og:title" content="SKy Fit | Premium Fitness Club">
+
+  <meta
+    property="og:description"
+    content="Gücünü yenidən qur. Müasir məşq mühiti, peşəkar məşqçilər və rahat rəqəmsal üzv sistemi."
+  >
+
+  <meta
+    property="og:url"
+    content="https://qerib-seferli.github.io/SKyFit/"
+  >
+
+  <meta
+    property="og:image"
+    content="https://qerib-seferli.github.io/SKyFit/assets/img/hero-main.jpg"
+  >
+
+  <link
+    rel="canonical"
+    href="https://qerib-seferli.github.io/SKyFit/"
+  >
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/img/logo.png">
+  <link rel="apple-touch-icon" href="assets/img/logo.png">
+
+  <link rel="preload" href="assets/img/hero-main.jpg" as="image">
+  <link rel="preload" href="assets/img/logo.png" as="image">
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <title>SKy Fit | Premium Fitness Club</title>
+</head>
+
+<body class="home-page">
+  <a class="skip-link" href="#main-content">
+    Əsas məzmuna keç
+  </a>
+
+  <!-- =======================================================
+       SƏHİFƏ YÜKLƏNMƏ EKRANI
+  ======================================================== -->
+  <div
+    id="appLoader"
+    class="app-loader"
+    role="status"
+    aria-live="polite"
+    aria-label="Səhifə yüklənir"
+  >
+    <div class="app-loader__content">
+      <div class="app-loader__media">
+        <img
+          class="sky-loader-image"
+          src="assets/img/fitness-loader.gif"
+          alt=""
+          width="96"
+          height="96"
+        >
+      </div>
+
+      <strong class="app-loader__title">
+        SKy Fit
+      </strong>
+
+      <span class="app-loader__text">
+        Sistem hazırlanır...
+      </span>
+    </div>
+  </div>
+
+  <!-- =======================================================
+       OFFLINE / ONLINE STATUS
+  ======================================================== -->
+  <div
+    id="networkStatus"
+    class="network-status"
+    role="status"
+    aria-live="polite"
+    hidden
+  >
+    İnternet bağlantısı yoxdur
+  </div>
+
+  <!-- =======================================================
+       SABİT NAVBAR
+       core.js daxilində istifadəçi sessiyasına görə yenilənəcək.
+  ======================================================== -->
+  <div data-header>
+    <header class="topbar" id="siteHeader">
+      <div class="shell topbar-inner">
+        <a
+          class="brand"
+          href="index.html"
+          aria-label="SKy Fit ana səhifə"
+        >
+          <img
+            src="assets/img/logo.png"
+            alt="SKy Fit loqosu"
+            width="44"
+            height="44"
+          >
+
+          <span class="brand__text">
+            <strong>
+              <span>SKy</span> Fit
+            </strong>
+
+            <small>Premium Fitness Club</small>
+          </span>
+        </a>
+
+        <nav
+          class="nav"
+          id="desktopNavigation"
+          aria-label="Əsas naviqasiya"
+        >
+          <a class="active" href="#home">
+            Ana səhifə
+          </a>
+
+          <a href="#products-section">
+            Məhsullar
+          </a>
+
+          <a href="#trainers-section">
+            Məşqçilər
+          </a>
+
+          <a href="#membership-section">
+            Üzvlük
+          </a>
+
+          <a href="#contact-section">
+            Əlaqə
+          </a>
+        </nav>
+
+        <div class="topbar-actions">
+          <button
+            id="pwaInstallButton"
+            class="icon-btn pwa-install-button"
+            type="button"
+            aria-label="SKy Fit tətbiqini quraşdır"
+            title="Tətbiqi quraşdır"
+            hidden
+          >
+            <span aria-hidden="true">↓</span>
+          </button>
+
+          <a
+            class="icon-btn"
+            href="sevimliler.html"
+            aria-label="Sevimli məhsullar"
+            title="Sevimlilər"
+          >
+            <span aria-hidden="true">♡</span>
+          </a>
+
+          <button
+            id="themeToggle"
+            class="icon-btn"
+            type="button"
+            aria-label="Ağ və qara rejimi dəyiş"
+            title="Görünüş rejimi"
+          >
+            <span class="theme-icon" aria-hidden="true">◐</span>
+          </button>
+
+          <a
+            id="headerProfileLink"
+            class="btn btn-small btn-outline"
+            href="login.html"
+          >
+            Daxil ol
+          </a>
+
+          <button
+            id="mobileMenuButton"
+            class="icon-btn mobile-menu-button"
+            type="button"
+            aria-label="Mobil menyunu aç"
+            aria-controls="mobileNavigation"
+            aria-expanded="false"
+          >
+            <span aria-hidden="true">☰</span>
+          </button>
+        </div>
+      </div>
+
+      <nav
+        id="mobileNavigation"
+        class="mobile-navigation"
+        aria-label="Mobil naviqasiya"
+        hidden
+      >
+        <a href="#home">Ana səhifə</a>
+        <a href="#products-section">Məhsullar</a>
+        <a href="#trainers-section">Məşqçilər</a>
+        <a href="#membership-section">Üzvlük</a>
+        <a href="#contact-section">Əlaqə</a>
+        <a href="profile.html">Profil</a>
+      </nav>
+    </header>
+  </div>
+
+  <!-- =======================================================
+       HERO
+  ======================================================== -->
+  <main id="main-content">
+    <section
+      id="home"
+      class="hero hero-home"
+      aria-labelledby="heroTitle"
+    >
+      <div class="hero-backdrop" aria-hidden="true"></div>
+
+      <div class="hero-glow hero-glow--one" aria-hidden="true"></div>
+      <div class="hero-glow hero-glow--two" aria-hidden="true"></div>
+
+      <div class="shell hero-layout">
+        <div class="hero-content">
+          <span class="eyebrow">
+            Bərdənin premium fitness məkanı
+          </span>
+
+          <h1 id="heroTitle">
+            Gücünü
+            <span>yenidən qur.</span>
+          </h1>
+
+          <p class="hero-description">
+            Müasir məşq mühiti, peşəkar məşqçilər, aylıq və
+            günlük üzvlük, idman qidaları və rahat rəqəmsal
+            üzv kabineti.
+          </p>
+
+          <div class="hero-actions">
+            <a
+              class="btn btn-primary btn-large"
+              href="register.html"
+            >
+              İndi üzv ol
+            </a>
+
+            <a
+              class="btn btn-whatsapp btn-large"
+              href="https://wa.me/994555240160?text=Salam%2C%20SKy%20Fit%20haqq%C4%B1nda%20m%C9%99lumat%20almaq%20ist%C9%99yir%C9%99m."
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg
+                class="button-icon"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  fill="currentColor"
+                  d="M12.04 2a9.84 9.84 0 0 0-8.4 14.97L2 22l5.18-1.61A9.88 9.88 0 1 0 12.04 2Zm0 17.97a8.1 8.1 0 0 1-4.13-1.13l-.3-.18-3.07.95 1-2.99-.2-.31A8.13 8.13 0 1 1 12.04 19.97Zm4.46-6.08c-.24-.12-1.44-.71-1.66-.79-.22-.08-.38-.12-.54.12-.16.24-.62.79-.76.95-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.43-1.34-1.67-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.31-.74-1.79-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.69 2.58 4.1 3.62.57.25 1.02.4 1.37.51.58.18 1.1.16 1.52.1.46-.07 1.44-.59 1.64-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28Z"
+                />
+              </svg>
+
+              WhatsApp
+            </a>
+
+            <a
+              class="btn btn-ghost btn-large"
+              href="https://maps.app.goo.gl/7UHf6EtpCbsbXBF26"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Konumu aç
+            </a>
+          </div>
+
+          <div class="hero-highlights" aria-label="Zal üstünlükləri">
+            <div class="hero-highlight">
+              <strong>30 AZN</strong>
+              <span>Aylıq üzvlük</span>
+            </div>
+
+            <div class="hero-highlight">
+              <strong>3 AZN</strong>
+              <span>Günlük giriş</span>
+            </div>
+
+            <div class="hero-highlight">
+              <strong>08:00–23:00</strong>
+              <span>İş saatları</span>
+            </div>
+          </div>
+        </div>
+
+        <aside
+          class="hero-status-card glass-panel"
+          aria-label="SKy Fit üzvlük məlumatı"
+        >
+          <span class="status-dot">
+            <i aria-hidden="true"></i>
+            Hazırda açıqdır
+          </span>
+
+          <h2>
+            İlk məşqinə bu gün başla
+          </h2>
+
+          <p>
+            Qeydiyyatdan keç, üzvlük və borc məlumatlarını şəxsi
+            kabinetindən real vaxtda izlə.
+          </p>
+
+          <a class="btn btn-primary" href="register.html">
+            Hesab yarat
+          </a>
+        </aside>
+      </div>
+
+      <a
+        class="hero-scroll"
+        href="#products-section"
+        aria-label="Məhsullar bölməsinə keç"
+      >
+        <span>Keşf et</span>
+        <i aria-hidden="true">↓</i>
+      </a>
+    </section>
+
+    <!-- =====================================================
+         MƏHSULLAR
+    ====================================================== -->
+    <section
+      id="products-section"
+      class="section products-section"
+      aria-labelledby="productsTitle"
+    >
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <span class="section-kicker">
+              SKy Fit mağazası
+            </span>
+
+            <h2 id="productsTitle">
+              Satışda olan məhsullar
+            </h2>
+
+            <p>
+              Məhsul qiymətləri və stok göstəriciləri admin paneldən
+              dəyişdirildikdə real vaxtda yenilənir.
+            </p>
+          </div>
+
+          <div class="section-head-actions">
+            <label class="search-control" for="publicProductSearch">
+              <span class="sr-only">Məhsul axtar</span>
+
+              <input
+                id="publicProductSearch"
+                class="input"
+                type="search"
+                placeholder="Məhsul axtar..."
+                autocomplete="off"
+              >
+            </label>
+
+            <a class="btn btn-outline" href="sevimliler.html">
+              Sevimlilər
+            </a>
+          </div>
+        </div>
+
+        <div
+          id="productCategories"
+          class="filter-chips"
+          aria-label="Məhsul kateqoriyaları"
+        >
+          <button
+            class="filter-chip active"
+            type="button"
+            data-category="all"
+          >
+            Hamısı
+          </button>
+        </div>
+
+        <div
+          id="products"
+          class="grid grid-4 product-grid"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <div class="skeleton product-skeleton"></div>
+          <div class="skeleton product-skeleton"></div>
+          <div class="skeleton product-skeleton"></div>
+          <div class="skeleton product-skeleton"></div>
+        </div>
+
+        <div
+          id="productsEmpty"
+          class="empty-state"
+          hidden
+        >
+          <img
+            class="sky-loader-image empty-state__image"
+            src="assets/img/fitness-loader.gif"
+            alt=""
+            width="96"
+            height="96"
+          >
+
+          <h3>Məhsul tapılmadı</h3>
+
+          <p>
+            Axtarış sözünü dəyişərək yenidən yoxlayın.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         ZAL HAQQINDA
+    ====================================================== -->
+    <section class="section gym-showcase-section">
+      <div class="shell gym-showcase">
+        <article class="gym-showcase__media">
+          <img
+            src="assets/img/gym-section-1.jpg"
+            alt="SKy Fit məşq atmosferi"
+            loading="lazy"
+          >
+
+          <div class="gym-showcase__badge">
+            <strong>SKy Fit</strong>
+            <span>Güc · İntizam · Nəticə</span>
+          </div>
+        </article>
+
+        <article class="gym-showcase__content">
+          <span class="section-kicker">
+            Sadəcə zal deyil
+          </span>
+
+          <h2>
+            Nəticə əldə etmək üçün qurulmuş mühit
+          </h2>
+
+          <p>
+            Məqsədimiz üzvlərə rahat, motivasiyaedici və peşəkar
+            məşq mühiti təqdim etməkdir. Aylıq və günlük giriş
+            imkanları ilə öz proqramınıza uyğun məşq edə bilərsiniz.
+          </p>
+
+          <div class="feature-list">
+            <div class="feature-item">
+              <span aria-hidden="true">✓</span>
+
+              <div>
+                <strong>Peşəkar nəzarət</strong>
+                <p>Məşqçilərdən fərdi istiqamətləndirmə.</p>
+              </div>
+            </div>
+
+            <div class="feature-item">
+              <span aria-hidden="true">✓</span>
+
+              <div>
+                <strong>Rahat üzvlük sistemi</strong>
+                <p>Abunəliyin və borcun kabinetində görünür.</p>
+              </div>
+            </div>
+
+            <div class="feature-item">
+              <span aria-hidden="true">✓</span>
+
+              <div>
+                <strong>İdman qidaları</strong>
+                <p>Protein, kreatin, amino və digər məhsullar.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         MƏŞQÇİLƏR
+    ====================================================== -->
+    <section
+      id="trainers-section"
+      class="section trainers-section"
+      aria-labelledby="trainersTitle"
+    >
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <span class="section-kicker">
+              Təcrübəli komanda
+            </span>
+
+            <h2 id="trainersTitle">
+              Peşəkar məşqçilər
+            </h2>
+
+            <p>
+              Məqsədinizə uyğun məşq proqramı və davamlı nəzarət.
+            </p>
+          </div>
+        </div>
+
+        <div
+          id="trainers"
+          class="grid grid-3 trainer-grid"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <div class="skeleton trainer-skeleton"></div>
+          <div class="skeleton trainer-skeleton"></div>
+          <div class="skeleton trainer-skeleton"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         ÜZVLÜK
+    ====================================================== -->
+    <section
+      id="membership-section"
+      class="section membership-section"
+      aria-labelledby="membershipTitle"
+    >
+      <div class="membership-background" aria-hidden="true"></div>
+
+      <div class="shell">
+        <div class="section-head section-head--center">
+          <div>
+            <span class="section-kicker">
+              Sadə və şəffaf qiymətlər
+            </span>
+
+            <h2 id="membershipTitle">
+              Öz məşq rejimini seç
+            </h2>
+
+            <p>
+              Gizli ödəniş yoxdur. Aylıq üzvlük və günlük giriş.
+            </p>
+          </div>
+        </div>
+
+        <div class="membership-grid">
+          <article class="membership-card card">
+            <span class="membership-card__label">
+              Günlük
+            </span>
+
+            <h3>Günlük giriş</h3>
+
+            <div class="membership-price">
+              <strong>3</strong>
+              <span>AZN / gün</span>
+            </div>
+
+            <ul>
+              <li>Bir günlük zal istifadəsi</li>
+              <li>Rahat və sürətli qeydiyyat</li>
+              <li>Gəliş tarixçəsi</li>
+            </ul>
+
+            <a
+              class="btn btn-outline"
+              href="https://wa.me/994555240160?text=Salam%2C%20g%C3%BCnl%C3%BCk%20giri%C5%9F%20haqq%C4%B1nda%20m%C9%99lumat%20almaq%20ist%C9%99yir%C9%99m."
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Məlumat al
+            </a>
+          </article>
+
+          <article class="membership-card membership-card--featured card neon">
+            <span class="membership-card__popular">
+              Ən çox seçilən
+            </span>
+
+            <span class="membership-card__label">
+              Aylıq
+            </span>
+
+            <h3>Aylıq üzvlük</h3>
+
+            <div class="membership-price">
+              <strong>30</strong>
+              <span>AZN / 30 gün</span>
+            </div>
+
+            <ul>
+              <li>30 günlük zal istifadəsi</li>
+              <li>Abunəlik gün sayğacı</li>
+              <li>3 gün qalmış xəbərdarlıq</li>
+              <li>Şəxsi üzv kabineti</li>
+            </ul>
+
+            <a
+              class="btn btn-primary"
+              href="register.html"
+            >
+              İndi üzv ol
+            </a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         MOTİVASİYA BÖLMƏSİ
+    ====================================================== -->
+    <section class="section motivation-section">
+      <div class="shell motivation-card">
+        <div class="motivation-card__content">
+          <span class="section-kicker">
+            Bu gün başla
+          </span>
+
+          <h2>
+            Sabahkı gücün bugünkü qərarından başlayır.
+          </h2>
+
+          <p>
+            SKy Fit ilə davamlı məşq, düzgün nəzarət və motivasiya
+            bir yerdədir.
+          </p>
+
+          <div class="actions">
+            <a class="btn btn-primary" href="register.html">
+              Qeydiyyatdan keç
+            </a>
+
+            <a
+              class="btn btn-outline"
+              href="tel:+994555240160"
+            >
+              Zəng et
+            </a>
+          </div>
+        </div>
+
+        <div class="motivation-card__media">
+          <img
+            src="assets/img/gym-section-2.jpg"
+            alt="Qantellə məşq edən atlet"
+            loading="lazy"
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         ƏLAQƏ VƏ SOSİAL ŞƏBƏKƏLƏR
+    ====================================================== -->
+    <section
+      id="contact-section"
+      class="section contact-section"
+      aria-labelledby="contactTitle"
+    >
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <span class="section-kicker">
+              Bizimlə əlaqə
+            </span>
+
+            <h2 id="contactTitle">
+              SKy Fit-i ziyarət et
+            </h2>
+
+            <p>
+              Ünvan, iş saatları və sosial şəbəkələr.
+            </p>
+          </div>
+        </div>
+
+        <div class="contact-layout">
+          <div class="contact-information">
+            <a
+              class="social-card social-card--instagram"
+              href="https://www.instagram.com/sky_fit_club__/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span class="social-card__icon" aria-hidden="true">
+                ◎
+              </span>
+
+              <span>
+                <strong>Instagram</strong>
+                <small>@sky_fit_club__</small>
+              </span>
+
+              <i aria-hidden="true">↗</i>
+            </a>
+
+            <a
+              class="social-card social-card--tiktok"
+              href="https://www.tiktok.com/@sky_fit_club"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span class="social-card__icon" aria-hidden="true">
+                ♪
+              </span>
+
+              <span>
+                <strong>TikTok</strong>
+                <small>@sky_fit_club</small>
+              </span>
+
+              <i aria-hidden="true">↗</i>
+            </a>
+
+            <a
+              class="social-card social-card--whatsapp"
+              href="https://wa.me/994555240160"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span class="social-card__icon" aria-hidden="true">
+                ◉
+              </span>
+
+              <span>
+                <strong>WhatsApp</strong>
+                <small>+994 55 524 01 60</small>
+              </span>
+
+              <i aria-hidden="true">↗</i>
+            </a>
+
+            <div class="contact-detail-card card">
+              <div>
+                <span class="contact-detail-card__icon" aria-hidden="true">
+                  ●
+                </span>
+
+                <div>
+                  <strong>Ünvan</strong>
+
+                  <p>
+                    Bərdə ş. Avtovağzalın yanı,
+                    Güloğlular küçəsi döngəsi
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <span class="contact-detail-card__icon" aria-hidden="true">
+                  ◷
+                </span>
+
+                <div>
+                  <strong>İş saatları</strong>
+                  <p>Hər gün: 08:00 – 23:00</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="map-card card neon">
+            <div class="map-card__header">
+              <div>
+                <span class="section-kicker">Konum</span>
+                <h3>SKy Fit xəritədə</h3>
+              </div>
+
+              <a
+                class="btn btn-small btn-outline"
+                href="https://maps.app.goo.gl/7UHf6EtpCbsbXBF26"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Xəritədə aç
+              </a>
+            </div>
+
+            <div class="map-frame">
+              <iframe
+                title="SKy Fit xəritə konumu"
+                src="https://www.google.com/maps?q=B%C9%99rd%C9%99%20Avtova%C4%9Fzal%C4%B1&output=embed"
+                width="100%"
+                height="100%"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                allowfullscreen
+              ></iframe>
+
+              <div class="map-frame__overlay" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- =======================================================
+       FOOTER
+  ======================================================== -->
+  <div data-footer>
+    <footer class="footer">
+      <div class="shell footer-layout">
+        <div class="footer-brand">
+          <a class="brand" href="index.html">
+            <img
+              src="assets/img/logo.png"
+              alt="SKy Fit"
+              width="44"
+              height="44"
+            >
+
+            <span class="brand__text">
+              <strong><span>SKy</span> Fit</strong>
+              <small>Premium Fitness Club</small>
+            </span>
+          </a>
+
+          <p>
+            Güc, intizam və nəticə üçün yaradılmış peşəkar
+            fitness mühiti.
+          </p>
+        </div>
+
+        <div class="footer-links">
+          <strong>Keçidlər</strong>
+          <a href="#products-section">Məhsullar</a>
+          <a href="#trainers-section">Məşqçilər</a>
+          <a href="#membership-section">Üzvlük</a>
+          <a href="profile.html">Şəxsi kabinet</a>
+        </div>
+
+        <div class="footer-links">
+          <strong>Əlaqə</strong>
+          <a href="tel:+994555240160">
+            +994 55 524 01 60
+          </a>
+
+          <a
+            href="https://maps.app.goo.gl/7UHf6EtpCbsbXBF26"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Bərdə şəhəri
+          </a>
+        </div>
+      </div>
+
+      <div class="shell footer-bottom">
+        <span>
+          © <span id="currentYear"></span> SKy Fit.
+          Bütün hüquqlar qorunur.
+        </span>
+
+        <span>
+          Web · PWA · Desktop
+        </span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- =======================================================
+       MOBİL ALT NAVİQASİYA
+  ======================================================== -->
+  <nav
+    class="mobile-bottom-navigation"
+    aria-label="Mobil alt menyu"
+  >
+    <a class="active" href="index.html">
+      <span aria-hidden="true">⌂</span>
+      <small>Ana səhifə</small>
+    </a>
+
+    <a href="#products-section">
+      <span aria-hidden="true">▦</span>
+      <small>Məhsullar</small>
+    </a>
+
+    <a href="sevimliler.html">
+      <span aria-hidden="true">♡</span>
+      <small>Sevimlilər</small>
+    </a>
+
+    <a href="profile.html">
+      <span aria-hidden="true">♙</span>
+      <small>Profil</small>
+    </a>
+  </nav>
+
+  <!-- =======================================================
+       TOAST MESAJLARI
+  ======================================================== -->
+  <div
+    id="toastContainer"
+    class="toast-wrap"
+    aria-live="polite"
+    aria-atomic="true"
+  ></div>
+
+  <noscript>
+    <div class="noscript-message">
+      SKy Fit sisteminin işləməsi üçün JavaScript aktiv olmalıdır.
+    </div>
+  </noscript>
+
+  <!-- Supabase browser client -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+  <!-- Real layihə konfiqurasiyası -->
+  <script src="js/config.js"></script>
+
+  <!-- Ana səhifə məntiqi -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
