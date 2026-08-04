@@ -1263,14 +1263,19 @@ export function redirectTo(
 export async function requireAuth(
   requiredRole = null,
 ) {
-  if (!isConfigured) {
-    redirectTo(
-      'setup.html',
-      true,
-    );
+if (!isConfigured) {
+  console.error(
+    'SKy Fit: Supabase konfiqurasiyası oxunmadı.',
+  );
 
-    return null;
-  }
+  toast(
+    'Sistem bağlantısı qurulmadı. Səhifəni yeniləyin.',
+    'error',
+    6000,
+  );
+
+  return null;
+}
 
   const session =
     await getSession();
