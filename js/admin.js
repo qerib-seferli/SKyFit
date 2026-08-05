@@ -218,7 +218,6 @@ const elements = {
 
   notificationsPanel: byId('adminNotificationsPanel'),
   notificationsList: byId('adminNotificationsList'),
-  notificationCount: byId('notificationCount'),
 
   dashboardExpiring: byId('dashboardExpiringMemberships'),
   dashboardLowStock: byId('dashboardLowStock'),
@@ -226,7 +225,7 @@ const elements = {
 
   trainersTable: byId('trainersTable'),
 
-    pageDescription:
+  pageDescription:
     byId('pageDescription'),
 
   adminCurrentDate:
@@ -2227,7 +2226,8 @@ async function loadMembers() {
       status,
       payment_status,
       created_at,
-      profiles (
+
+      member_profile:profiles!memberships_member_id_fkey (
         id,
         full_name,
         email,
@@ -2235,7 +2235,8 @@ async function loadMembers() {
         avatar_url,
         is_active
       ),
-      membership_plans (
+
+      plan:membership_plans!memberships_plan_id_fkey (
         id,
         name,
         price,
@@ -2318,8 +2319,7 @@ function renderMembersTable() {
           );
 
         const plan =
-          membership
-            ?.membership_plans;
+          membership?.plan;
 
         return `
           <tr>
@@ -4030,7 +4030,7 @@ function payDebt(memberId, providedBalance = null) {
 
   const memberName =
     getProfileName(
-      debt?.profiles,
+      debt?.member_profile,
     );
 
   const content = `
@@ -6792,10 +6792,10 @@ function bindEvents() {
       },
     );
   
-  document.addEventListener(
+    document.addEventListener(
     'click',
-
-          const attendanceMemberButton =
+    async (event) => {
+      const attendanceMemberButton =
         event.target.closest(
           '[data-select-attendance-member]',
         );
@@ -6821,16 +6821,13 @@ function bindEvents() {
 
         await showPanel(panel);
 
-        if (
-          panel === 'members'
-        ) {
+        if (panel === 'members') {
           openNewMember();
         }
 
         return;
       }
-  
-    async (event) => {
+
       const addCartButton =
         event.target.closest(
           '[data-add-cart]',
@@ -6853,7 +6850,6 @@ function bindEvents() {
         changeCartQuantity(
           quantityButton.dataset
             .cartQuantity,
-
           quantityButton.dataset
             .change,
         );
@@ -6964,21 +6960,6 @@ function bindEvents() {
           editTrainerButton.dataset
             .editTrainer,
         );
-
-        return;
-      }
-
-      const notificationButton =
-        event.target.closest(
-          '#notificationButton',
-        );
-
-      if (
-        notificationButton &&
-        elements.notificationsPanel
-      ) {
-        elements.notificationsPanel.hidden =
-          !elements.notificationsPanel.hidden;
 
         return;
       }
