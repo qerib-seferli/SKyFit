@@ -49,13 +49,54 @@ const FALLBACK_IMAGE = 'assets/img/logo.png';
 const panelTitles = {
   dashboard: 'İdarəetmə paneli',
   pos: 'Tez satış / POS',
-  members: 'Üzvlər və abunəliklər',
+  attendance: 'Giriş qeydiyyatı',
+  members: 'Üzvlər',
+  memberships: 'Abunəliklər',
   debts: 'Borc və nisyə',
-  products: 'Məhsul və stok',
+  products: 'Məhsullar',
+  stock: 'Stok hərəkətləri',
   ledger: 'Mədaxil / Məxaric',
   reports: 'Hesabatlar',
   trainers: 'Məşqçilər',
   settings: 'Tənzimləmələr',
+};
+
+const panelDescriptions = {
+  dashboard:
+    'Zalın gündəlik vəziyyətini bir baxışda izləyin.',
+
+  pos:
+    'Məhsul və xidmət satışlarını kassaya əlavə edin.',
+
+  attendance:
+    'Üzvlərin zala girişlərini qeydə alın.',
+
+  members:
+    'Üzv məlumatlarını əlavə edin və idarə edin.',
+
+  memberships:
+    'Aktiv, bitmək üzrə və vaxtı bitmiş abunəlikləri izləyin.',
+
+  debts:
+    'Üzvlərin borc və ödəniş balanslarını idarə edin.',
+
+  products:
+    'Məhsulların qiymət, satış forması və stok məlumatlarını idarə edin.',
+
+  stock:
+    'Məhsullar üzrə bütün stok giriş və çıxışlarını izləyin.',
+
+  ledger:
+    'Gündəlik mədaxil və məxaric qeydlərini idarə edin.',
+
+  reports:
+    'Seçilmiş dövr üzrə maliyyə nəticələrini hesablayın.',
+
+  trainers:
+    'Məşqçi kartlarını və əlaqə məlumatlarını idarə edin.',
+
+  settings:
+    'Üzvlük planlarını və sistem məlumatlarını idarə edin.',
 };
 
 const expenseCategories = [
@@ -104,6 +145,8 @@ const state = {
   products: [],
   members: [],
   memberships: [],
+  attendance: [],
+  stockMovements: [],
   plans: [],
   debts: [],
   ledger: [],
@@ -182,6 +225,183 @@ const elements = {
   dashboardRecentLedger: byId('dashboardRecentLedger'),
 
   trainersTable: byId('trainersTable'),
+
+    pageDescription:
+    byId('pageDescription'),
+
+  adminCurrentDate:
+    byId('adminCurrentDate'),
+
+  adminRefreshButton:
+    byId('adminRefreshButton'),
+
+  adminAccountButton:
+    byId('adminAccountButton'),
+
+  adminAccountMenu:
+    byId('adminAccountMenu'),
+
+  adminRole:
+    byId('adminRole'),
+
+  adminNotificationsButton:
+    byId('adminNotificationsButton'),
+
+  closeAdminNotifications:
+    byId('closeAdminNotifications'),
+
+  notificationCount:
+    byId('adminNotificationCount'),
+
+  membershipWarningCount:
+    byId('membershipWarningCount'),
+
+  debtWarningCount:
+    byId('debtWarningCount'),
+
+  stockWarningCount:
+    byId('stockWarningCount'),
+
+  attendanceForm:
+    byId('attendanceForm'),
+
+  attendanceMemberSearch:
+    byId('attendanceMemberSearch'),
+
+  attendanceMemberResults:
+    byId('attendanceMemberResults'),
+
+  attendanceMemberId:
+    byId('attendanceMemberId'),
+
+  attendanceSelectedMember:
+    byId('attendanceSelectedMember'),
+
+  attendanceSelectedAvatar:
+    byId('attendanceSelectedAvatar'),
+
+  attendanceSelectedName:
+    byId('attendanceSelectedName'),
+
+  attendanceSelectedDetails:
+    byId('attendanceSelectedDetails'),
+
+  clearAttendanceMember:
+    byId('clearAttendanceMember'),
+
+  attendancePaymentMethod:
+    byId('attendancePaymentMethod'),
+
+  attendanceSubmitButton:
+    byId('attendanceSubmitButton'),
+
+  attendanceMessage:
+    byId('attendanceMessage'),
+
+  todayAttendanceTable:
+    byId('todayAttendanceTable'),
+
+  todayAttendanceCount:
+    byId('todayAttendanceCount'),
+
+  openNewMemberButton:
+    byId('openNewMemberButton'),
+
+  openMembershipButton:
+    byId('openMembershipButton'),
+
+  membershipSearch:
+    byId('membershipSearch'),
+
+  membershipStatusFilter:
+    byId('membershipStatusFilter'),
+
+  membershipPlanFilter:
+    byId('membershipPlanFilter'),
+
+  refreshMembershipsButton:
+    byId('refreshMembershipsButton'),
+
+  membershipsTable:
+    byId('membershipsTable'),
+
+  membershipsEmpty:
+    byId('membershipsEmpty'),
+
+  openProductButton:
+    byId('openProductButton'),
+
+  addStockButton:
+    byId('addStockButton'),
+
+  productsAdminGrid:
+    byId('productsAdminGrid'),
+
+  productsAdminEmpty:
+    byId('productsAdminEmpty'),
+
+  stockProductFilter:
+    byId('stockProductFilter'),
+
+  stockMovementFilter:
+    byId('stockMovementFilter'),
+
+  stockDateFrom:
+    byId('stockDateFrom'),
+
+  stockDateTo:
+    byId('stockDateTo'),
+
+  loadStockMovementsButton:
+    byId('loadStockMovementsButton'),
+
+  stockMovementsTable:
+    byId('stockMovementsTable'),
+
+  stockMovementsEmpty:
+    byId('stockMovementsEmpty'),
+
+  openLedgerButton:
+    byId('openLedgerButton'),
+
+  loadLedgerButton:
+    byId('loadLedgerButton'),
+
+  exportLedgerButton:
+    byId('exportLedgerButton'),
+
+  ledgerTypeFilter:
+    byId('ledgerTypeFilter'),
+
+  ledgerIncomeTotal:
+    byId('ledgerIncomeTotal'),
+
+  ledgerExpenseTotal:
+    byId('ledgerExpenseTotal'),
+
+  ledgerProfitTotal:
+    byId('ledgerProfitTotal'),
+
+  loadReportsButton:
+    byId('loadReportsButton'),
+
+  printReportButton:
+    byId('printReportButton'),
+
+  reportPeriodPreset:
+    byId('reportPeriodPreset'),
+
+  openTrainerButton:
+    byId('openTrainerButton'),
+
+  trainersAdminGrid:
+    byId('trainersAdminGrid'),
+
+  trainersAdminEmpty:
+    byId('trainersAdminEmpty'),
+
+  membershipPlansList:
+    byId('membershipPlansList'),
 };
 
 // ============================================================
@@ -412,29 +632,51 @@ function renderTableEmpty(columnCount, message) {
 // ============================================================
 
 async function showPanel(panelId) {
-  const id = panelTitles[panelId]
-    ? panelId
-    : 'dashboard';
+  const id =
+    Object.prototype.hasOwnProperty.call(
+      panelTitles,
+      panelId,
+    )
+      ? panelId
+      : 'dashboard';
 
   state.activePanel = id;
 
   $$('.panel').forEach((panel) => {
+    const active =
+      panel.id === `panel-${id}`;
+
     panel.classList.toggle(
       'active',
-      panel.id === `panel-${id}`,
+      active,
     );
+
+    panel.hidden = !active;
   });
 
   $$('[data-panel]').forEach((button) => {
+    const active =
+      button.dataset.panel === id;
+
     button.classList.toggle(
       'active',
-      button.dataset.panel === id,
+      active,
+    );
+
+    button.setAttribute(
+      'aria-selected',
+      String(active),
     );
   });
 
   if (elements.pageTitle) {
     elements.pageTitle.textContent =
       panelTitles[id];
+  }
+
+  if (elements.pageDescription) {
+    elements.pageDescription.textContent =
+      panelDescriptions[id] ?? '';
   }
 
   history.replaceState(
@@ -455,8 +697,16 @@ async function showPanel(panelId) {
         await loadPOS();
         break;
 
+      case 'attendance':
+        await loadAttendance();
+        break;
+
       case 'members':
         await loadMembers();
+        break;
+
+      case 'memberships':
+        await loadMemberships();
         break;
 
       case 'debts':
@@ -465,6 +715,10 @@ async function showPanel(panelId) {
 
       case 'products':
         await loadProducts();
+        break;
+
+      case 'stock':
+        await loadStockMovements();
         break;
 
       case 'ledger':
@@ -479,14 +733,25 @@ async function showPanel(panelId) {
         await loadTrainers();
         break;
 
+      case 'settings':
+        await loadSettings();
+        break;
+
       default:
+        await loadDashboard();
         break;
     }
   } catch (error) {
-    reportError(error, `panel:${id}`);
+    reportError(
+      error,
+      `panel:${id}`,
+    );
 
     toast(
-      getErrorMessage(error),
+      getErrorMessage(
+        error,
+        'Məlumatlar yüklənmədi. Yenidən yoxlayın.',
+      ),
       'error',
     );
   }
@@ -537,6 +802,25 @@ function renderAdminIdentity() {
       getProfileName(state.profile);
   });
 
+    if (elements.adminRole) {
+    elements.adminRole.textContent =
+      state.profile.role === 'admin'
+        ? 'Baş idarəçi'
+        : 'İdarəçi';
+  }
+
+  if (elements.adminCurrentDate) {
+    elements.adminCurrentDate.textContent =
+      new Intl.DateTimeFormat(
+        'az-AZ',
+        {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+        },
+      ).format(new Date());
+  }
+  
   bindImageFallbacks();
 }
 
@@ -598,14 +882,20 @@ async function loadDashboard() {
           end_date,
           status,
           payment_status,
-          profiles (
+          member_profile:profiles!memberships_member_id_fkey (
             id,
             full_name,
-            phone
+            email,
+            phone,
+            avatar_url,
+            is_active
           ),
-          membership_plans (
+          plan:membership_plans!memberships_plan_id_fkey (
             id,
-            name
+            name,
+            price,
+            duration_days,
+            is_daily
           )
         `)
         .eq('status', 'active')
@@ -619,10 +909,13 @@ async function loadDashboard() {
           member_id,
           balance,
           updated_at,
-          profiles (
+          member_profile:profiles!debt_accounts_member_id_fkey (
             id,
             full_name,
-            phone
+            email,
+            phone,
+            avatar_url,
+            is_active
           )
         `)
         .gt('balance', 0)
@@ -936,7 +1229,7 @@ function renderDashboardLists({
             .slice(0, 8)
             .map((membership) => {
               const profile =
-                membership.profiles;
+                membership.member_profile;
 
               const remaining =
                 daysLeft(membership.end_date);
@@ -958,7 +1251,7 @@ function renderDashboardLists({
 
                     <small>
                       ${esc(
-                        membership.membership_plans
+                        membership.plan
                           ?.name ??
                         'Abunəlik',
                       )}
@@ -1093,7 +1386,7 @@ function renderDashboardNotifications({
         type: 'danger',
         title:
           `${getProfileName(
-            membership.profiles,
+            membership.member_profile,
           )} — abunəlik bitib`,
         text:
           `${fmtDate(
@@ -1117,7 +1410,7 @@ function renderDashboardNotifications({
         type: 'warning',
         title:
           `${getProfileName(
-            membership.profiles,
+            membership.member_profile,
           )} — müddət yaxınlaşır`,
         text:
           `${daysLeft(
@@ -1156,7 +1449,7 @@ function renderDashboardNotifications({
         type: 'danger',
         title:
           `${getProfileName(
-            debt.profiles,
+            debt.member_profile,
           )} — borc`,
         text: money(debt.balance),
         action:
@@ -2663,6 +2956,905 @@ async function handleMemberSubmit(event) {
   }
 }
 
+async function loadAttendance() {
+  await fetchMembers();
+
+  const today = todayISO();
+
+  const {
+    data,
+    error,
+  } = await sb
+    .from('attendance')
+    .select(`
+      id,
+      member_id,
+      membership_id,
+      attendance_type,
+      amount,
+      checked_in_at,
+      member_profile:profiles!attendance_member_id_fkey (
+        id,
+        full_name,
+        email,
+        phone,
+        avatar_url
+      )
+    `)
+    .gte(
+      'checked_in_at',
+      `${today}T00:00:00`,
+    )
+    .lte(
+      'checked_in_at',
+      `${today}T23:59:59.999`,
+    )
+    .order(
+      'checked_in_at',
+      {
+        ascending: false,
+      },
+    );
+
+  if (error) {
+    throw error;
+  }
+
+  state.attendance =
+    safeArray(data);
+
+  renderTodayAttendance();
+}
+
+function renderTodayAttendance() {
+  if (elements.todayAttendanceCount) {
+    elements.todayAttendanceCount.textContent =
+      String(
+        state.attendance.length,
+      );
+  }
+
+  if (!elements.todayAttendanceTable) {
+    return;
+  }
+
+  if (!state.attendance.length) {
+    elements.todayAttendanceTable.innerHTML =
+      renderTableEmpty(
+        4,
+        'Bu gün giriş qeydə alınmayıb.',
+      );
+
+    return;
+  }
+
+  elements.todayAttendanceTable.innerHTML =
+    state.attendance
+      .map((entry) => `
+        <tr>
+          <td>
+            ${esc(
+              fmtDateTime(
+                entry.checked_in_at,
+              ),
+            )}
+          </td>
+
+          <td>
+            ${esc(
+              getProfileName(
+                entry.member_profile,
+              ),
+            )}
+          </td>
+
+          <td>
+            <span class="badge ${
+              entry.attendance_type ===
+              'membership'
+                ? 'ok'
+                : 'warn'
+            }">
+              ${
+                entry.attendance_type ===
+                'membership'
+                  ? 'Abunəlik'
+                  : 'Günlük giriş'
+              }
+            </span>
+          </td>
+
+          <td>
+            ${esc(
+              money(entry.amount),
+            )}
+          </td>
+        </tr>
+      `)
+      .join('');
+}
+
+function renderAttendanceMemberResults(
+  searchValue,
+) {
+  if (
+    !elements.attendanceMemberResults
+  ) {
+    return;
+  }
+
+  const search =
+    String(searchValue ?? '')
+      .trim()
+      .toLocaleLowerCase('az-AZ');
+
+  if (search.length < 2) {
+    elements.attendanceMemberResults.innerHTML =
+      '';
+
+    return;
+  }
+
+  const filtered =
+    state.members
+      .filter((member) => {
+        const text = [
+          member.full_name,
+          member.phone,
+          member.email,
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .toLocaleLowerCase(
+            'az-AZ',
+          );
+
+        return text.includes(search);
+      })
+      .slice(0, 8);
+
+  elements.attendanceMemberResults.innerHTML =
+    filtered.length
+      ? filtered
+          .map((member) => `
+            <button
+              type="button"
+              class="member-search-result"
+              data-select-attendance-member="${esc(
+                member.id,
+              )}"
+            >
+              <img
+                src="${esc(
+                  safeImageUrl(
+                    member.avatar_url,
+                  ),
+                )}"
+                alt=""
+              >
+
+              <span>
+                <strong>
+                  ${esc(
+                    getProfileName(
+                      member,
+                    ),
+                  )}
+                </strong>
+
+                <small>
+                  ${esc(
+                    member.phone ||
+                    member.email ||
+                    'Əlaqə yoxdur',
+                  )}
+                </small>
+              </span>
+            </button>
+          `)
+          .join('')
+      : `
+        <div class="empty-state empty-state--compact">
+          Üzv tapılmadı.
+        </div>
+      `;
+}
+
+function selectAttendanceMember(
+  memberId,
+) {
+  const member =
+    state.members.find(
+      (item) =>
+        String(item.id) ===
+        String(memberId),
+    );
+
+  if (!member) return;
+
+  elements.attendanceMemberId.value =
+    member.id;
+
+  elements.attendanceSelectedName.textContent =
+    getProfileName(member);
+
+  elements.attendanceSelectedDetails.textContent =
+    member.phone ||
+    member.email ||
+    'Əlaqə yoxdur';
+
+  elements.attendanceSelectedAvatar.src =
+    safeImageUrl(
+      member.avatar_url,
+    );
+
+  elements.attendanceSelectedMember.hidden =
+    false;
+
+  elements.attendanceMemberResults.innerHTML =
+    '';
+
+  elements.attendanceMemberSearch.value =
+    '';
+}
+
+function clearAttendanceMember() {
+  if (elements.attendanceMemberId) {
+    elements.attendanceMemberId.value =
+      '';
+  }
+
+  if (
+    elements.attendanceSelectedMember
+  ) {
+    elements.attendanceSelectedMember.hidden =
+      true;
+  }
+
+  if (
+    elements.attendanceMemberResults
+  ) {
+    elements.attendanceMemberResults.innerHTML =
+      '';
+  }
+}
+
+async function handleAttendanceSubmit(
+  event,
+) {
+  event.preventDefault();
+
+  const memberId =
+    elements.attendanceMemberId
+      ?.value;
+
+  if (!memberId) {
+    setFormMessage(
+      elements.attendanceMessage,
+      'Əvvəlcə üzv seçin.',
+      'error',
+    );
+
+    return;
+  }
+
+  setBusy(
+    elements.attendanceSubmitButton,
+    true,
+    'Giriş qeydə alınır...',
+  );
+
+  try {
+    const {
+      error,
+    } = await sb.rpc(
+      'record_attendance',
+      {
+        p_member_id: memberId,
+
+        p_payment_method:
+          elements
+            .attendancePaymentMethod
+            ?.value ??
+          'cash',
+      },
+    );
+
+    if (error) {
+      throw error;
+    }
+
+    toast(
+      'Zala giriş uğurla qeydə alındı.',
+      'success',
+    );
+
+    clearAttendanceMember();
+
+    await Promise.all([
+      loadAttendance(),
+      loadDashboard(),
+    ]);
+  } catch (error) {
+    setFormMessage(
+      elements.attendanceMessage,
+      getErrorMessage(error),
+      'error',
+    );
+  } finally {
+    setBusy(
+      elements.attendanceSubmitButton,
+      false,
+    );
+  }
+}
+
+
+async function loadMemberships() {
+  await Promise.all([
+    fetchMembers(),
+    fetchMembershipPlans(),
+  ]);
+
+  const {
+    data,
+    error,
+  } = await sb
+    .from('memberships')
+    .select(`
+      id,
+      member_id,
+      plan_id,
+      start_date,
+      end_date,
+      price,
+      status,
+      payment_status,
+      created_at,
+
+      member_profile:profiles!memberships_member_id_fkey (
+        id,
+        full_name,
+        email,
+        phone,
+        avatar_url,
+        is_active
+      ),
+
+      plan:membership_plans!memberships_plan_id_fkey (
+        id,
+        name,
+        price,
+        duration_days,
+        is_daily
+      )
+    `)
+    .order(
+      'end_date',
+      {
+        ascending: false,
+      },
+    );
+
+  if (error) {
+    throw error;
+  }
+
+  state.memberships =
+    safeArray(data);
+
+  renderMembershipFilters();
+  renderMembershipsTable();
+}
+
+function renderMembershipFilters() {
+  if (
+    !elements.membershipPlanFilter
+  ) {
+    return;
+  }
+
+  const current =
+    elements.membershipPlanFilter
+      .value ||
+    'all';
+
+  elements.membershipPlanFilter.innerHTML = `
+    <option value="all">
+      Bütün planlar
+    </option>
+
+    ${state.plans
+      .map((plan) => `
+        <option
+          value="${esc(plan.id)}"
+        >
+          ${esc(plan.name)}
+        </option>
+      `)
+      .join('')}
+  `;
+
+  elements.membershipPlanFilter.value =
+    current;
+}
+
+function getFilteredMemberships() {
+  const search =
+    String(
+      elements.membershipSearch
+        ?.value ??
+      '',
+    )
+      .trim()
+      .toLocaleLowerCase('az-AZ');
+
+  const statusFilter =
+    elements.membershipStatusFilter
+      ?.value ??
+    'all';
+
+  const planFilter =
+    elements.membershipPlanFilter
+      ?.value ??
+    'all';
+
+  return state.memberships.filter(
+    (membership) => {
+      const profile =
+        membership.member_profile ??
+        {};
+
+      const searchText = [
+        profile.full_name,
+        profile.phone,
+        profile.email,
+        membership.plan?.name,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLocaleLowerCase(
+          'az-AZ',
+        );
+
+      if (
+        search &&
+        !searchText.includes(search)
+      ) {
+        return false;
+      }
+
+      if (
+        planFilter !== 'all' &&
+        String(
+          membership.plan_id,
+        ) !== planFilter
+      ) {
+        return false;
+      }
+
+      if (
+        statusFilter !== 'all'
+      ) {
+        const membershipStatus =
+          membershipState(
+            membership.end_date,
+          ).key;
+
+        if (
+          membershipStatus !==
+          statusFilter
+        ) {
+          return false;
+        }
+      }
+
+      return true;
+    },
+  );
+}
+
+function renderMembershipsTable() {
+  if (!elements.membershipsTable) {
+    return;
+  }
+
+  const memberships =
+    getFilteredMemberships();
+
+  if (!memberships.length) {
+    elements.membershipsTable.innerHTML =
+      renderTableEmpty(
+        8,
+        'Abunəlik tapılmadı.',
+      );
+
+    if (elements.membershipsEmpty) {
+      elements.membershipsEmpty.hidden =
+        false;
+    }
+
+    return;
+  }
+
+  if (elements.membershipsEmpty) {
+    elements.membershipsEmpty.hidden =
+      true;
+  }
+
+  elements.membershipsTable.innerHTML =
+    memberships
+      .map((membership) => {
+        const remaining =
+          daysLeft(
+            membership.end_date,
+          );
+
+        return `
+          <tr>
+            <td>
+              ${esc(
+                getProfileName(
+                  membership.member_profile,
+                ),
+              )}
+            </td>
+
+            <td>
+              ${esc(
+                membership.plan?.name ??
+                'Plan',
+              )}
+            </td>
+
+            <td>
+              ${esc(
+                fmtDate(
+                  membership.start_date,
+                ),
+              )}
+            </td>
+
+            <td>
+              ${esc(
+                fmtDate(
+                  membership.end_date,
+                ),
+              )}
+            </td>
+
+            <td>
+              ${
+                remaining === null
+                  ? '—'
+                  : remaining < 0
+                    ? `${Math.abs(
+                        remaining,
+                      )} gün keçib`
+                    : `${remaining} gün`
+              }
+            </td>
+
+            <td>
+              ${paymentStatusBadge(
+                membership.payment_status,
+              )}
+            </td>
+
+            <td>
+              ${getMembershipStatusLabel(
+                membership,
+              )}
+            </td>
+
+            <td>
+              <button
+                class="btn btn-small"
+                type="button"
+                data-open-member-membership="${esc(
+                  membership.member_id,
+                )}"
+              >
+                Yenilə
+              </button>
+            </td>
+          </tr>
+        `;
+      })
+      .join('');
+}
+
+
+async function loadStockMovements() {
+  if (!state.products.length) {
+    await fetchProducts({
+      includeInactive: true,
+    });
+  }
+
+  const from =
+    elements.stockDateFrom?.value ||
+    getDefaultFromDate();
+
+  const to =
+    elements.stockDateTo?.value ||
+    todayISO();
+
+  if (elements.stockDateFrom) {
+    elements.stockDateFrom.value =
+      from;
+  }
+
+  if (elements.stockDateTo) {
+    elements.stockDateTo.value =
+      to;
+  }
+
+  let query = sb
+    .from('stock_movements')
+    .select(`
+      id,
+      product_id,
+      movement_type,
+      quantity,
+      balance_after,
+      unit_cost,
+      note,
+      created_at,
+
+      product:products!stock_movements_product_id_fkey (
+        id,
+        name,
+        stock_unit
+      )
+    `)
+    .gte(
+      'created_at',
+      `${from}T00:00:00`,
+    )
+    .lte(
+      'created_at',
+      `${to}T23:59:59.999`,
+    )
+    .order(
+      'created_at',
+      {
+        ascending: false,
+      },
+    );
+
+  const productFilter =
+    elements.stockProductFilter
+      ?.value ??
+    'all';
+
+  const movementFilter =
+    elements.stockMovementFilter
+      ?.value ??
+    'all';
+
+  if (productFilter !== 'all') {
+    query = query.eq(
+      'product_id',
+      productFilter,
+    );
+  }
+
+  if (movementFilter !== 'all') {
+    query = query.eq(
+      'movement_type',
+      movementFilter,
+    );
+  }
+
+  const {
+    data,
+    error,
+  } = await query;
+
+  if (error) {
+    throw error;
+  }
+
+  state.stockMovements =
+    safeArray(data);
+
+  renderStockProductFilter();
+  renderStockMovementsTable();
+}
+
+function renderStockProductFilter() {
+  if (!elements.stockProductFilter) {
+    return;
+  }
+
+  const current =
+    elements.stockProductFilter
+      .value ||
+    'all';
+
+  elements.stockProductFilter.innerHTML = `
+    <option value="all">
+      Bütün məhsullar
+    </option>
+
+    ${state.products
+      .map((product) => `
+        <option
+          value="${esc(product.id)}"
+        >
+          ${esc(product.name)}
+        </option>
+      `)
+      .join('')}
+  `;
+
+  elements.stockProductFilter.value =
+    current;
+}
+
+function getMovementLabel(type) {
+  const labels = {
+    purchase: 'Alış',
+    sale: 'Satış',
+    adjustment: 'Düzəliş',
+    waste: 'İtki',
+    return: 'Qaytarma',
+  };
+
+  return labels[type] ??
+    type ??
+    'Əməliyyat';
+}
+
+function renderStockMovementsTable() {
+  if (!elements.stockMovementsTable) {
+    return;
+  }
+
+  if (!state.stockMovements.length) {
+    elements.stockMovementsTable.innerHTML =
+      renderTableEmpty(
+        7,
+        'Stok hərəkəti yoxdur.',
+      );
+
+    if (
+      elements.stockMovementsEmpty
+    ) {
+      elements.stockMovementsEmpty.hidden =
+        false;
+    }
+
+    return;
+  }
+
+  if (
+    elements.stockMovementsEmpty
+  ) {
+    elements.stockMovementsEmpty.hidden =
+      true;
+  }
+
+  elements.stockMovementsTable.innerHTML =
+    state.stockMovements
+      .map((movement) => `
+        <tr>
+          <td>
+            ${esc(
+              fmtDateTime(
+                movement.created_at,
+              ),
+            )}
+          </td>
+
+          <td>
+            ${esc(
+              movement.product?.name ??
+              'Məhsul',
+            )}
+          </td>
+
+          <td>
+            <span class="badge ${
+              movement.quantity < 0
+                ? 'danger'
+                : 'ok'
+            }">
+              ${esc(
+                getMovementLabel(
+                  movement.movement_type,
+                ),
+              )}
+            </span>
+          </td>
+
+          <td>
+            <strong class="${
+              movement.quantity < 0
+                ? 'stat-value--danger'
+                : 'status-success'
+            }">
+              ${
+                movement.quantity > 0
+                  ? '+'
+                  : ''
+              }${esc(
+                number(
+                  movement.quantity,
+                  3,
+                ),
+              )}
+            </strong>
+          </td>
+
+          <td>
+            ${esc(
+              number(
+                movement.balance_after,
+                3,
+              ),
+            )}
+            ${esc(
+              movement.product
+                ?.stock_unit ??
+              '',
+            )}
+          </td>
+
+          <td>
+            ${esc(
+              money(
+                movement.unit_cost,
+              ),
+            )}
+          </td>
+
+          <td>
+            ${esc(
+              movement.note ??
+              '—',
+            )}
+          </td>
+        </tr>
+      `)
+      .join('');
+}
+
+async function loadSettings() {
+  await fetchMembershipPlans();
+
+  if (!elements.membershipPlansList) {
+    return;
+  }
+
+  elements.membershipPlansList.innerHTML =
+    state.plans
+      .map((plan) => `
+        <div class="settings-list-item">
+          <div>
+            <strong>
+              ${esc(plan.name)}
+            </strong>
+
+            <small>
+              ${plan.duration_days} gün
+            </small>
+          </div>
+
+          <div>
+            <strong>
+              ${esc(
+                money(plan.price),
+              )}
+            </strong>
+          </div>
+        </div>
+      `)
+      .join('');
+}
+
+
 // ============================================================
 // BORCLAR
 // ============================================================
@@ -2677,7 +3869,8 @@ async function loadDebts() {
       member_id,
       balance,
       updated_at,
-      profiles (
+
+      member_profile:profiles!debt_accounts_member_id_fkey (
         id,
         full_name,
         email,
@@ -2716,7 +3909,7 @@ function getFilteredDebts() {
 
   return state.debts.filter((debt) => {
     const profile =
-      debt.profiles ?? {};
+      debt.member_profile ?? {};
 
     const text = [
       profile.full_name,
@@ -2756,7 +3949,7 @@ function renderDebtsTable() {
               <img
                 src="${esc(
                   safeImageUrl(
-                    debt.profiles
+                    debt.member_profile
                       ?.avatar_url,
                   ),
                 )}"
@@ -2768,14 +3961,14 @@ function renderDebtsTable() {
                 <strong>
                   ${esc(
                     getProfileName(
-                      debt.profiles,
+                      debt.member_profile,
                     ),
                   )}
                 </strong>
 
                 <small>
                   ${esc(
-                    debt.profiles?.email ||
+                    debt.member_profile?.email ||
                     '',
                   )}
                 </small>
@@ -2785,7 +3978,7 @@ function renderDebtsTable() {
 
           <td>
             ${esc(
-              debt.profiles?.phone ||
+              debt.member_profile?.phone ||
               '—',
             )}
           </td>
@@ -5412,8 +6605,231 @@ function bindEvents() {
     }, 250),
   );
 
+    elements.adminRefreshButton
+    ?.addEventListener(
+      'click',
+      () => {
+        void showPanel(
+          state.activePanel,
+        );
+      },
+    );
+
+  elements.openNewMemberButton
+    ?.addEventListener(
+      'click',
+      openNewMember,
+    );
+
+  elements.openMembershipButton
+    ?.addEventListener(
+      'click',
+      () => {
+        void openMembership();
+      },
+    );
+
+  elements.openProductButton
+    ?.addEventListener(
+      'click',
+      () => {
+        editProduct();
+      },
+    );
+
+  elements.addStockButton
+    ?.addEventListener(
+      'click',
+      () => {
+        void addStock();
+      },
+    );
+
+  elements.openLedgerButton
+    ?.addEventListener(
+      'click',
+      openLedger,
+    );
+
+  elements.loadLedgerButton
+    ?.addEventListener(
+      'click',
+      () => {
+        void loadLedger();
+      },
+    );
+
+  elements.loadStockMovementsButton
+    ?.addEventListener(
+      'click',
+      () => {
+        void loadStockMovements();
+      },
+    );
+
+  elements.refreshMembershipsButton
+    ?.addEventListener(
+      'click',
+      () => {
+        void loadMemberships();
+      },
+    );
+
+  elements.loadReportsButton
+    ?.addEventListener(
+      'click',
+      () => {
+        void loadReports();
+      },
+    );
+
+  elements.printReportButton
+    ?.addEventListener(
+      'click',
+      () => {
+        window.print();
+      },
+    );
+
+  elements.openTrainerButton
+    ?.addEventListener(
+      'click',
+      () => {
+        editTrainer();
+      },
+    );
+
+  elements.attendanceForm
+    ?.addEventListener(
+      'submit',
+      handleAttendanceSubmit,
+    );
+
+  elements.attendanceMemberSearch
+    ?.addEventListener(
+      'input',
+      debounce((event) => {
+        renderAttendanceMemberResults(
+          event.target.value,
+        );
+      }),
+    );
+
+  elements.clearAttendanceMember
+    ?.addEventListener(
+      'click',
+      clearAttendanceMember,
+    );
+
+  elements.membershipSearch
+    ?.addEventListener(
+      'input',
+      debounce(
+        renderMembershipsTable,
+      ),
+    );
+
+  elements.membershipStatusFilter
+    ?.addEventListener(
+      'change',
+      renderMembershipsTable,
+    );
+
+  elements.membershipPlanFilter
+    ?.addEventListener(
+      'change',
+      renderMembershipsTable,
+    );
+
+  elements.adminAccountButton
+    ?.addEventListener(
+      'click',
+      () => {
+        const open =
+          elements.adminAccountMenu
+            .hidden;
+
+        elements.adminAccountMenu.hidden =
+          !open;
+
+        elements.adminAccountButton.setAttribute(
+          'aria-expanded',
+          String(open),
+        );
+      },
+    );
+
+  elements.adminNotificationsButton
+    ?.addEventListener(
+      'click',
+      () => {
+        const open =
+          elements.notificationsPanel
+            .hidden;
+
+        elements.notificationsPanel.hidden =
+          !open;
+
+        elements.adminNotificationsButton.setAttribute(
+          'aria-expanded',
+          String(open),
+        );
+      },
+    );
+
+  elements.closeAdminNotifications
+    ?.addEventListener(
+      'click',
+      () => {
+        elements.notificationsPanel.hidden =
+          true;
+
+        elements.adminNotificationsButton
+          ?.setAttribute(
+            'aria-expanded',
+            'false',
+          );
+      },
+    );
+  
   document.addEventListener(
     'click',
+
+          const attendanceMemberButton =
+        event.target.closest(
+          '[data-select-attendance-member]',
+        );
+
+      if (attendanceMemberButton) {
+        selectAttendanceMember(
+          attendanceMemberButton.dataset
+            .selectAttendanceMember,
+        );
+
+        return;
+      }
+
+      const openPanelButton =
+        event.target.closest(
+          '[data-open-panel]',
+        );
+
+      if (openPanelButton) {
+        const panel =
+          openPanelButton.dataset
+            .openPanel;
+
+        await showPanel(panel);
+
+        if (
+          panel === 'members'
+        ) {
+          openNewMember();
+        }
+
+        return;
+      }
+  
     async (event) => {
       const addCartButton =
         event.target.closest(
