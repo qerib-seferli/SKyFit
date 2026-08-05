@@ -5479,3 +5479,338 @@ html[data-theme="light"] .map-frame iframe {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* ======================================================================================================================*/
+/* ============================================================
+   SKy Fit — Admin/Profile compact stabilization
+   ============================================================ */
+
+.admin-page .admin-main {
+  min-width: 0;
+  padding: 18px;
+}
+
+.admin-page-header {
+  margin-bottom: 16px;
+}
+
+.admin-page-header h1 {
+  margin-bottom: 4px;
+  font-size: clamp(1.9rem, 3vw, 2.7rem);
+}
+
+.admin-page-header p {
+  margin-bottom: 0;
+}
+
+.admin-page .card {
+  border-radius: 16px;
+}
+
+.admin-page .table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow: auto;
+}
+
+.admin-page .table {
+  width: 100%;
+  min-width: 920px;
+  table-layout: auto;
+}
+
+.admin-page .table th {
+  padding: 11px 12px;
+  white-space: nowrap;
+  font-size: 10px;
+}
+
+.admin-page .table td {
+  padding: 10px 12px;
+  vertical-align: middle;
+}
+
+.admin-page .table tr {
+  height: auto;
+}
+
+.table-person,
+.table-product {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-width: 160px;
+}
+
+.table-person > img,
+.table-product > img {
+  width: 46px !important;
+  min-width: 46px !important;
+  max-width: 46px !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  max-height: 46px !important;
+  object-fit: cover !important;
+  border: 1px solid rgba(255, 222, 0, 0.28);
+  border-radius: 12px;
+  background: var(--surface-3);
+}
+
+.table-person > span,
+.table-product > span {
+  min-width: 0;
+}
+
+.table-person strong,
+.table-product strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.table-person small,
+.table-product small,
+.table-secondary-text {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+  white-space: normal;
+}
+
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+.table-actions .btn {
+  white-space: nowrap;
+}
+
+.admin-page .toolbar {
+  align-items: stretch;
+}
+
+.admin-page .admin-toolbar .input {
+  min-width: 150px;
+  max-width: 260px;
+}
+
+.admin-page .admin-toolbar .search-control {
+  min-width: 220px;
+  flex: 1 1 240px;
+}
+
+.admin-page .admin-toolbar .search-control .input {
+  width: 100%;
+  max-width: none;
+}
+
+.admin-page .stats {
+  gap: 10px;
+}
+
+.admin-page .stat {
+  min-height: 112px;
+  padding: 14px;
+}
+
+.admin-page .stat-value {
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+}
+
+.admin-dashboard-hero {
+  min-height: 260px;
+}
+
+.admin-dashboard-hero__content {
+  max-width: 700px;
+}
+
+.pos-grid {
+  align-items: start;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(310px, 360px);
+}
+
+.pos-cart {
+  position: sticky;
+  top: calc(var(--header-height) + 14px);
+  max-height: calc(100vh - var(--header-height) - 28px);
+  overflow: auto;
+}
+
+.cart-line {
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto
+    auto;
+}
+
+.cart-line > div:first-child {
+  min-width: 0;
+}
+
+.cart-line strong {
+  overflow-wrap: anywhere;
+}
+
+.admin-attendance-layout {
+  align-items: start;
+}
+
+.selected-member-card img,
+.attendance-member-result img {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+#panel-trainers .table-person > img {
+  width: 54px !important;
+  min-width: 54px !important;
+  max-width: 54px !important;
+  height: 54px !important;
+  min-height: 54px !important;
+  max-height: 54px !important;
+}
+
+.profile-cover-section {
+  min-height: 330px;
+}
+
+.profile-cover-content {
+  min-height: 330px;
+  padding-block: 48px;
+}
+
+.profile-page .avatar-large {
+  width: 108px;
+  height: 108px;
+}
+
+.profile-page .profile-stats-grid {
+  gap: 10px;
+}
+
+.profile-page .profile-stat-card {
+  min-height: 150px;
+  padding: 15px;
+}
+
+.profile-page .profile-primary-grid {
+  align-items: stretch;
+}
+
+.profile-page .profile-history-table {
+  min-width: 720px;
+}
+
+.profile-page .footer {
+  margin-top: auto;
+}
+
+@media (max-width: 1180px) {
+  .pos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pos-cart {
+    position: static;
+    max-height: none;
+  }
+
+  .admin-page .table {
+    min-width: 820px;
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-page .admin-main {
+    padding: 12px 10px 88px;
+  }
+
+  .admin-page-header {
+    gap: 10px;
+  }
+
+  .admin-page-header__actions {
+    width: 100%;
+  }
+
+  .admin-page .admin-toolbar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-page .admin-toolbar > * {
+    width: 100%;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  .admin-page .admin-toolbar .search-control {
+    grid-column: 1 / -1;
+  }
+
+  .admin-page .table {
+    min-width: 760px;
+  }
+
+  .table-person,
+  .table-product {
+    grid-template-columns: 38px minmax(0, 1fr);
+    min-width: 140px;
+  }
+
+  .table-person > img,
+  .table-product > img {
+    width: 38px !important;
+    min-width: 38px !important;
+    max-width: 38px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    border-radius: 10px;
+  }
+
+  .profile-cover-section,
+  .profile-cover-content {
+    min-height: 280px;
+  }
+
+  .profile-cover-content {
+    padding-block: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-page .admin-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-page .admin-toolbar .search-control {
+    grid-column: auto;
+  }
+
+  .admin-page .stats,
+  .profile-page .profile-stats-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-page .stat {
+    min-height: 100px;
+  }
+
+  .admin-page .stat-value {
+    font-size: 1.12rem;
+  }
+}
