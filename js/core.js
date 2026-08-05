@@ -562,6 +562,56 @@ export function getErrorMessage(
     return 'Bu əməliyyat üçün icazəniz yoxdur.';
   }
 
+    if (
+    normalized.includes('pgrst201') ||
+    normalized.includes(
+      'more than one relationship',
+    ) ||
+    normalized.includes(
+      'could not embed',
+    )
+  ) {
+    return 'Məlumat əlaqələri yüklənmədi. Səhifəni yeniləyib yenidən yoxlayın.';
+  }
+
+  if (
+    normalized.includes(
+      'duplicate key value',
+    )
+  ) {
+    return 'Bu məlumat sistemdə artıq mövcuddur.';
+  }
+
+  if (
+    normalized.includes(
+      'violates foreign key constraint',
+    )
+  ) {
+    return 'Əlaqəli məlumat tapılmadığı üçün əməliyyat tamamlanmadı.';
+  }
+
+  if (
+    normalized.includes(
+      'insufficient stock',
+    ) ||
+    normalized.includes(
+      'stok kifayət deyil',
+    )
+  ) {
+    return 'Seçilmiş məhsul üçün kifayət qədər stok yoxdur.';
+  }
+
+  if (
+    normalized.includes(
+      'permission denied',
+    ) ||
+    normalized.includes(
+      'icazə yoxdur',
+    )
+  ) {
+    return 'Bu əməliyyatı yerinə yetirmək üçün səlahiyyətiniz yoxdur.';
+  }
+
   if (
     normalized.includes(
       'jwt expired',
@@ -1241,7 +1291,6 @@ export function getSafeNextPage(
     'profile.html',
     'admin.html',
     'sevimliler.html',
-    'setup.html',
   ]);
 
   return allowedPages.has(cleaned)
