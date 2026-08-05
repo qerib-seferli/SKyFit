@@ -1853,13 +1853,17 @@ export function confirmAction({
     const modalElement =
       byId('confirmModal');
 
-    if (!modalElement) {
-      resolve(
-        window.confirm(message),
-      );
-
-      return;
-    }
+  if (!modalElement) {
+    toast(
+      'Təsdiq pəncərəsi yüklənmədi. Səhifəni yeniləyin.',
+      'error',
+      5000,
+    );
+  
+    resolve(false);
+  
+    return;
+  }
 
     setText(
       '#confirmModalTitle',
@@ -2819,16 +2823,9 @@ function checkConfiguration() {
     return true;
   }
 
-  const currentPage =
-    getCurrentPage();
-
-  if (
-    currentPage !== 'setup.html'
-  ) {
-    console.warn(
-      'SKy Fit Supabase konfiqurasiyası tamamlanmayıb.',
-    );
-  }
+  console.error(
+    'SKy Fit Supabase konfiqurasiyası tamamlanmayıb.',
+  );
 
   return false;
 }
