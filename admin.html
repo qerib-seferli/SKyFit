@@ -619,7 +619,7 @@
             </div>
 
             <div
-              id="dashboardLedgerList"
+              id="dashboardRecentLedger"
               class="dashboard-list"
             >
               <div class="table-loading">
@@ -643,7 +643,7 @@
             </div>
 
             <div
-              id="dashboardWarningsList"
+              id="dashboardExpiringMemberships"
               class="dashboard-list"
             >
               <div class="table-loading">
@@ -717,7 +717,7 @@
             </div>
 
             <div
-              id="dashboardLowStockList"
+              id="dashboardLowStock"
               class="dashboard-list"
             >
               <div class="table-loading">
@@ -879,12 +879,12 @@
 
               <label
                 class="summary-row summary-row--discount"
-                for="cartDiscount"
+                for="cartDiscountInput"
               >
                 <span>Endirim</span>
-
+              
                 <input
-                  id="cartDiscount"
+                  id="cartDiscountInput"
                   class="input input-compact"
                   type="number"
                   min="0"
@@ -1137,14 +1137,28 @@
               </span>
             </div>
 
-            <div
-              id="todayAttendanceList"
-              class="dashboard-list"
-            >
-              <div class="table-loading">
-                <span class="button-loader"></span>
-                Girişlər yüklənir...
-              </div>
+            <div class="table-wrap">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Tarix və saat</th>
+                    <th>Üzv</th>
+                    <th>Giriş tipi</th>
+                    <th>Məbləğ</th>
+                  </tr>
+                </thead>
+            
+                <tbody id="todayAttendanceTable">
+                  <tr>
+                    <td colspan="4">
+                      <div class="table-loading">
+                        <span class="button-loader"></span>
+                        Girişlər yüklənir...
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </section>
         </div>
@@ -1167,13 +1181,13 @@
             + Yeni üzv
           </button>
 
-          <label class="search-control" for="membersSearch">
+          <label class="search-control" for="memberSearch">
             <span class="sr-only">
               Üzv axtar
             </span>
-
+          
             <input
-              id="membersSearch"
+              id="memberSearch"
               class="input"
               type="search"
               placeholder="Ad, telefon və ya email..."
@@ -1522,7 +1536,7 @@
           </button>
 
           <button
-            id="openStockEntryButton"
+            id="addStockButton"
             class="btn btn-outline"
             type="button"
           >
@@ -1537,13 +1551,13 @@
             Stok düzəlişi
           </button>
 
-          <label class="search-control" for="productsSearch">
+          <label class="search-control" for="productAdminSearch">
             <span class="sr-only">
               Məhsul axtar
             </span>
-
+          
             <input
-              id="productsSearch"
+              id="productAdminSearch"
               class="input"
               type="search"
               placeholder="Məhsul və ya SKU..."
@@ -2157,15 +2171,30 @@
           </label>
         </div>
 
-        <div
-          id="trainersAdminGrid"
-          class="grid grid-3 trainer-admin-grid"
-          aria-live="polite"
-        >
-          <div class="skeleton trainer-skeleton"></div>
-          <div class="skeleton trainer-skeleton"></div>
-          <div class="skeleton trainer-skeleton"></div>
-        </div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Məşqçi</th>
+                  <th>Telefon</th>
+                  <th>Sıralama</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+          
+              <tbody id="trainersTable">
+                <tr>
+                  <td colspan="5">
+                    <div class="table-loading">
+                      <span class="button-loader"></span>
+                      Məşqçilər yüklənir...
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
         <div
           id="trainersAdminEmpty"
