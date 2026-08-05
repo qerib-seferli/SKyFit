@@ -114,76 +114,79 @@ const elements = {
     byId('membership'),
 
   membershipContent:
-    byId('membershipProfileContent'),
+    byId('membershipContent'),
 
   membershipAlert:
-    byId('membershipAlert'),
+    byId('profileAlert'),
 
   membershipAlertTitle:
-    byId('membershipAlertTitle'),
+    byId('profileAlertTitle'),
 
   membershipAlertText:
-    byId('membershipAlertText'),
+    byId('profileAlertText'),
 
   membershipPlanName:
     byId('membershipPlanName'),
 
   membershipDates:
-    byId('membershipDates'),
+    byId('membershipDateRange'),
 
   membershipDays:
-    byId('membershipDays'),
+    byId('membershipDaysLeft'),
 
   membershipProgress:
-    byId('membershipProgress'),
+    byId('membershipProgress') ??
+    byId('membershipProgressBar'),
 
   membershipStatus:
-    byId('membershipStatus'),
+    byId('membershipStatusBadge'),
 
   debt:
     byId('debt'),
 
   debtContent:
-    byId('debtProfileContent'),
+    byId('debtContent'),
 
   debtAmount:
-    byId('profileDebtAmount'),
+    byId('currentDebtAmount'),
 
   debtStatus:
-    byId('profileDebtStatus'),
+    byId('debtStatusBadge'),
 
   salesCount:
-    byId('profileSalesCount'),
+    byId('totalPurchaseCount'),
 
   attendanceCount:
+    byId('attendanceHistoryCount') ??
     byId('profileAttendanceCount'),
 
   membershipCount:
+    byId('membershipHistoryCount') ??
     byId('profileMembershipCount'),
 
   history:
     byId('history'),
 
   salesTable:
-    byId('salesHistoryTable'),
+    byId('history'),
 
   salesEmpty:
-    byId('salesHistoryEmpty'),
+    byId('purchaseHistoryEmpty'),
 
   debtTable:
-    byId('debtHistoryTable'),
+    byId('debtHistoryBody'),
 
   debtEmpty:
     byId('debtHistoryEmpty'),
 
   attendanceTable:
-    byId('attendanceHistoryTable'),
+    byId('attendanceHistoryBody'),
 
   attendanceEmpty:
     byId('attendanceHistoryEmpty'),
 
   membershipHistory:
-    byId('membershipHistoryTable'),
+    byId('membershipHistoryBody'),
 
   membershipHistoryEmpty:
     byId('membershipHistoryEmpty'),
@@ -329,18 +332,27 @@ function getDebtBalance() {
 function getActiveMembership(
   memberships,
 ) {
-  if (!Array.isArray(memberships)) {
+  if (
+    !Array.isArray(
+      memberships,
+    )
+  ) {
     return null;
   }
 
   const today =
     new Date();
 
-  today.setHours(12, 0, 0, 0);
+  today.setHours(
+    12,
+    0,
+    0,
+    0,
+  );
 
-  return (
-    memberships.find(
-      (membership) => {
+  const validMemberships =
+    memberships
+      .filter((membership) => {
         const endDate =
           new Date(
             `${membership.end_date}T12:00:00`,
@@ -354,9 +366,35 @@ function getActiveMembership(
           ) &&
           endDate >= today
         );
-      },
-    ) ??
-    memberships[0] ??
+      })
+      .sort((a, b) => {
+        const planA =
+          getMembershipPlan(a);
+
+        const planB =
+          getMembershipPlan(b);
+
+        if (
+          planA?.is_daily !==
+          planB?.is_daily
+        ) {
+          return planA?.is_daily
+            ? 1
+            : -1;
+        }
+
+        return (
+          new Date(
+            b.end_date,
+          ).getTime() -
+          new Date(
+            a.end_date,
+          ).getTime()
+        );
+      });
+
+  return (
+    validMemberships[0] ??
     null
   );
 }
