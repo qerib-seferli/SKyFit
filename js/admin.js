@@ -201,8 +201,38 @@ const elements = {
   membersTable: byId('membersTable'),
   memberSearch: byId('memberSearch'),
 
-  debtsTable: byId('debtsTable'),
-  debtSearch: byId('debtSearch'),
+  debtsTable:
+    byId('debtsTable'),
+
+  debtSearch:
+    byId('debtSearch'),
+
+  debtSort:
+    byId('debtSort'),
+
+  refreshDebtsButton:
+    byId('refreshDebtsButton'),
+
+  totalDebtAmount:
+    byId('totalDebtAmount'),
+
+  totalDebtorCount:
+    byId('totalDebtorCount'),
+
+  monthlyDebtPayment:
+    byId('monthlyDebtPayment'),
+
+  membersStatusFilter:
+    byId('membersStatusFilter'),
+
+  refreshMembersButton:
+    byId('refreshMembersButton'),
+
+  posCreateMemberButton:
+    byId('posCreateMemberButton'),
+
+  clearCartButton:
+    byId('clearCartButton'),
 
   productsTable: byId('productsTable'),
   productAdminSearch: byId('productAdminSearch'),
@@ -2211,49 +2241,70 @@ async function loadMembers() {
     fetchMembershipPlans(),
   ]);
 
-  const {
-    data,
-    error,
-  } = await sb
-    .from('memberships')
-    .select(`
-      id,
-      member_id,
-      plan_id,
-      start_date,
-      end_date,
-      price,
-      status,
-      payment_status,
-      created_at,
-
-      member_profile:profiles!memberships_member_id_fkey (
+  const [
+    membershipsResult,
+    debtsResult,
+  ] = await Promise.all([
+    sb
+      .from('memberships')
+      .select(`
         id,
-        full_name,
-        email,
-        phone,
-        avatar_url,
-        is_active
-      ),
-
-      plan:membership_plans!memberships_plan_id_fkey (
-        id,
-        name,
+        member_id,
+        plan_id,
+        start_date,
+        end_date,
         price,
-        duration_days,
-        is_daily
-      )
-    `)
-    .order('end_date', {
-      ascending: false,
-    });
+        status,
+        payment_status,
+        created_at,
 
-  if (error) {
-    throw error;
+        member_profile:profiles!memberships_member_id_fkey (
+          id,
+          full_name,
+          email,
+          phone,
+          avatar_url,
+          is_active
+        ),
+
+        plan:membership_plans!memberships_plan_id_fkey (
+          id,
+          name,
+          price,
+          duration_days,
+          is_daily
+        )
+      `)
+      .order('end_date', {
+        ascending: false,
+      }),
+
+    sb
+      .from('debt_accounts')
+      .select(`
+        member_id,
+        balance,
+        updated_at
+      `),
+  ]);
+
+  if (membershipsResult.error) {
+    throw membershipsResult.error;
+  }
+
+  if (debtsResult.error) {
+    throw debtsResult.error;
   }
 
   state.memberships =
-    safeArray(data);
+    safeArray(
+      membershipsResult.data,
+    );
+
+  state.debts =
+    safeArray(
+      debtsResult.data,
+    );
 
   renderMembersTable();
 }
@@ -2295,7 +2346,9 @@ function findLatestMembership(memberId) {
 }
 
 function renderMembersTable() {
-  if (!elements.membersTable) return;
+  if (!elements.membersTable) {
+    return;
+  }
 
   const members =
     getFilteredMembers();
@@ -2303,7 +2356,7 @@ function renderMembersTable() {
   if (!members.length) {
     elements.membersTable.innerHTML =
       renderTableEmpty(
-        7,
+        8,
         'Üzv tapılmadı.',
       );
 
@@ -2319,7 +2372,25 @@ function renderMembersTable() {
           );
 
         const plan =
-          membership?.plan;
+          membership?.plan ??
+          null;
+
+        const debt =
+          state.debts.find(
+            (item) =>
+              String(item.member_id) ===
+              String(member.id),
+          );
+
+        const debtBalance =
+          safeNumber(
+            debt?.balance,
+          );
+
+        const registrationLabel =
+          member.is_manual
+            ? 'Əllə əlavə edilib'
+            : 'Email hesabı';
 
         return `
           <tr>
@@ -2338,56 +2409,68 @@ function renderMembersTable() {
                 <span>
                   <strong>
                     ${esc(
-                      getProfileName(member),
+                      getProfileName(
+                        member,
+                      ),
                     )}
                   </strong>
-
-                  <small>
-                    ${esc(
-                      member.phone ||
-                      member.email ||
-                      'Əlaqə yoxdur',
-                    )}
-                  </small>
                 </span>
               </div>
             </td>
 
             <td>
               ${esc(
-                plan?.name ??
-                'Abunəlik yoxdur',
+                member.phone ??
+                '—',
               )}
             </td>
 
             <td>
               ${esc(
-                fmtDate(
-                  membership?.start_date,
-                ),
-              )}
-            </td>
-
-            <td>
-              ${esc(
-                fmtDate(
-                  membership?.end_date,
-                ),
+                member.email ??
+                '—',
               )}
             </td>
 
             <td>
               ${
                 membership
-                  ? getMembershipStatusLabel(
-                      membership,
-                    )
+                  ? `
+                    <strong>
+                      ${esc(
+                        plan?.name ??
+                        'Üzvlük',
+                      )}
+                    </strong>
+
+                    <small class="table-secondary-text">
+                      ${esc(
+                        fmtDate(
+                          membership.end_date,
+                        ),
+                      )}-dək
+                    </small>
+                  `
                   : `
                     <span class="badge danger">
-                      Abunə yoxdur
+                      Abunəlik yoxdur
                     </span>
                   `
               }
+            </td>
+
+            <td>
+              <strong class="${
+                debtBalance > 0
+                  ? 'stat-value--danger'
+                  : 'status-success'
+              }">
+                ${esc(
+                  money(
+                    debtBalance,
+                  ),
+                )}
+              </strong>
             </td>
 
             <td>
@@ -2407,11 +2490,21 @@ function renderMembersTable() {
             </td>
 
             <td>
+              <span class="badge">
+                ${esc(
+                  registrationLabel,
+                )}
+              </span>
+            </td>
+
+            <td>
               <div class="table-actions">
                 <button
                   class="btn btn-small"
                   type="button"
-                  data-open-member-membership="${esc(member.id)}"
+                  data-open-member-membership="${esc(
+                    member.id,
+                  )}"
                 >
                   Abunəlik
                 </button>
@@ -2419,7 +2512,9 @@ function renderMembersTable() {
                 <button
                   class="btn btn-outline btn-small"
                   type="button"
-                  data-edit-member="${esc(member.id)}"
+                  data-edit-member="${esc(
+                    member.id,
+                  )}"
                 >
                   Düzəlt
                 </button>
@@ -3860,35 +3955,100 @@ async function loadSettings() {
 // ============================================================
 
 async function loadDebts() {
-  const {
-    data,
-    error,
-  } = await sb
-    .from('debt_accounts')
-    .select(`
-      member_id,
-      balance,
-      updated_at,
+  const monthStart =
+    startOfMonthISO(
+      new Date(),
+    );
 
-      member_profile:profiles!debt_accounts_member_id_fkey (
-        id,
-        full_name,
-        email,
-        phone,
-        avatar_url,
-        is_active
+  const [
+    debtsResult,
+    paymentsResult,
+  ] = await Promise.all([
+    sb
+      .from('debt_accounts')
+      .select(`
+        member_id,
+        balance,
+        updated_at,
+
+        member_profile:profiles!debt_accounts_member_id_fkey (
+          id,
+          full_name,
+          email,
+          phone,
+          avatar_url,
+          is_active
+        )
+      `)
+      .gt('balance', 0),
+
+    sb
+      .from('debt_transactions')
+      .select(`
+        amount,
+        created_at
+      `)
+      .eq(
+        'transaction_type',
+        'payment',
       )
-    `)
-    .gt('balance', 0)
-    .order('balance', {
-      ascending: false,
-    });
+      .gte(
+        'created_at',
+        `${monthStart}T00:00:00`,
+      ),
+  ]);
 
-  if (error) {
-    throw error;
+  if (debtsResult.error) {
+    throw debtsResult.error;
   }
 
-  state.debts = safeArray(data);
+  if (paymentsResult.error) {
+    throw paymentsResult.error;
+  }
+
+  state.debts =
+    safeArray(
+      debtsResult.data,
+    );
+
+  const totalDebt =
+    state.debts.reduce(
+      (sum, debt) =>
+        sum +
+        safeNumber(
+          debt.balance,
+        ),
+      0,
+    );
+
+  const monthlyPayments =
+    safeArray(
+      paymentsResult.data,
+    ).reduce(
+      (sum, payment) =>
+        sum +
+        safeNumber(
+          payment.amount,
+        ),
+      0,
+    );
+
+  if (elements.totalDebtAmount) {
+    elements.totalDebtAmount.textContent =
+      money(totalDebt);
+  }
+
+  if (elements.totalDebtorCount) {
+    elements.totalDebtorCount.textContent =
+      String(
+        state.debts.length,
+      );
+  }
+
+  if (elements.monthlyDebtPayment) {
+    elements.monthlyDebtPayment.textContent =
+      money(monthlyPayments);
+  }
 
   renderDebtsTable();
 }
@@ -3901,31 +4061,74 @@ function getFilteredDebts() {
       '',
     )
       .trim()
-      .toLocaleLowerCase('az-AZ');
+      .toLocaleLowerCase(
+        'az-AZ',
+      );
 
-  if (!search) {
-    return state.debts;
+  let debts =
+    [...state.debts];
+
+  if (search) {
+    debts =
+      debts.filter((debt) => {
+        const profile =
+          debt.member_profile ??
+          {};
+
+        const text = [
+          profile.full_name,
+          profile.phone,
+          profile.email,
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .toLocaleLowerCase(
+            'az-AZ',
+          );
+
+        return text.includes(
+          search,
+        );
+      });
   }
 
-  return state.debts.filter((debt) => {
-    const profile =
-      debt.member_profile ?? {};
+  const sort =
+    elements.debtSort
+      ?.value ??
+    'highest';
 
-    const text = [
-      profile.full_name,
-      profile.phone,
-      profile.email,
-    ]
-      .filter(Boolean)
-      .join(' ')
-      .toLocaleLowerCase('az-AZ');
+  debts.sort((a, b) => {
+    if (sort === 'lowest') {
+      return (
+        safeNumber(a.balance) -
+        safeNumber(b.balance)
+      );
+    }
 
-    return text.includes(search);
+    if (sort === 'recent') {
+      return (
+        new Date(
+          b.updated_at,
+        ).getTime() -
+        new Date(
+          a.updated_at,
+        ).getTime()
+      );
+    }
+
+    return (
+      safeNumber(b.balance) -
+      safeNumber(a.balance)
+    );
   });
+
+  return debts;
 }
 
 function renderDebtsTable() {
-  if (!elements.debtsTable) return;
+  if (!elements.debtsTable) {
+    return;
+  }
 
   const debts =
     getFilteredDebts();
@@ -3933,7 +4136,7 @@ function renderDebtsTable() {
   if (!debts.length) {
     elements.debtsTable.innerHTML =
       renderTableEmpty(
-        5,
+        6,
         'Hazırda borclu üzv yoxdur.',
       );
 
@@ -3942,72 +4145,83 @@ function renderDebtsTable() {
 
   elements.debtsTable.innerHTML =
     debts
-      .map((debt) => `
-        <tr>
-          <td>
-            <div class="table-person">
-              <img
-                src="${esc(
-                  safeImageUrl(
-                    debt.member_profile
-                      ?.avatar_url,
-                  ),
-                )}"
-                alt=""
-                data-image-fallback
-              >
+      .map((debt) => {
+        const profile =
+          debt.member_profile ??
+          {};
 
-              <span>
-                <strong>
-                  ${esc(
-                    getProfileName(
-                      debt.member_profile,
+        return `
+          <tr>
+            <td>
+              <div class="table-person">
+                <img
+                  src="${esc(
+                    safeImageUrl(
+                      profile.avatar_url,
                     ),
-                  )}
-                </strong>
+                  )}"
+                  alt=""
+                  data-image-fallback
+                >
 
-                <small>
-                  ${esc(
-                    debt.member_profile?.email ||
-                    '',
-                  )}
-                </small>
-              </span>
-            </div>
-          </td>
+                <span>
+                  <strong>
+                    ${esc(
+                      getProfileName(
+                        profile,
+                      ),
+                    )}
+                  </strong>
+                </span>
+              </div>
+            </td>
 
-          <td>
-            ${esc(
-              debt.member_profile?.phone ||
-              '—',
-            )}
-          </td>
+            <td>
+              ${esc(
+                profile.phone ??
+                '—',
+              )}
+            </td>
 
-          <td>
-            <strong class="stat-value--danger">
-              ${esc(money(debt.balance))}
-            </strong>
-          </td>
+            <td>
+              ${esc(
+                profile.email ??
+                '—',
+              )}
+            </td>
 
-          <td>
-            ${esc(
-              fmtDateTime(
-                debt.updated_at,
-              ),
-            )}
-          </td>
+            <td>
+              <strong class="stat-value--danger">
+                ${esc(
+                  money(
+                    debt.balance,
+                  ),
+                )}
+              </strong>
+            </td>
 
-          <td>
-            <button
-              class="btn btn-primary btn-small"
-              type="button"
-              data-pay-debt="${esc(debt.member_id)}"
-            >
-              Ödəniş qəbul et
-            </button>
-          </td>
-        </tr>
-      `)
+            <td>
+              ${esc(
+                fmtDateTime(
+                  debt.updated_at,
+                ),
+              )}
+            </td>
+
+            <td>
+              <button
+                class="btn btn-primary btn-small"
+                type="button"
+                data-pay-debt="${esc(
+                  debt.member_id,
+                )}"
+              >
+                Ödəniş qəbul et
+              </button>
+            </td>
+          </tr>
+        `;
+      })
       .join('');
 
   bindImageFallbacks(
@@ -6529,6 +6743,54 @@ async function destroyRealtime() {
 function bindEvents() {
   bindPanelNavigation();
 
+    elements.completeSaleButton
+    ?.addEventListener(
+      'click',
+      () => {
+        void completeSale();
+      },
+    );
+
+  elements.posCreateMemberButton
+    ?.addEventListener(
+      'click',
+      openNewMember,
+    );
+
+  elements.clearCartButton
+    ?.addEventListener(
+      'click',
+      clearCart,
+    );
+
+  elements.debtSort
+    ?.addEventListener(
+      'change',
+      renderDebtsTable,
+    );
+
+  elements.refreshDebtsButton
+    ?.addEventListener(
+      'click',
+      () => {
+        void loadDebts();
+      },
+    );
+
+  elements.membersStatusFilter
+    ?.addEventListener(
+      'change',
+      renderMembersTable,
+    );
+
+  elements.refreshMembersButton
+    ?.addEventListener(
+      'click',
+      () => {
+        void loadMembers();
+      },
+    );
+  
   elements.posSearch
     ?.addEventListener(
       'input',
