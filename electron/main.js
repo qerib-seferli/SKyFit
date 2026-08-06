@@ -97,7 +97,7 @@ function createWindow() {
       '..',
       'assets',
       'img',
-      'logo.png',
+      'icon.ico',
     ),
 
     webPreferences: {

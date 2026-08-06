@@ -1,9 +1,9 @@
 // ============================================================
 // SKy Fit Professional — Service Worker
-// Build: 2026.08.05-v7
+// Build: 2026.08.06-v9-stable
 // ============================================================
 
-const VERSION = '2026.08.05-v7';
+const VERSION = '2026.08.06-v9-stable';
 
 const STATIC_CACHE = `skyfit-static-${VERSION}`;
 const RUNTIME_CACHE = `skyfit-runtime-${VERSION}`;
@@ -38,7 +38,10 @@ const APP_SHELL = [
   './assets/img/admin-background.jpg',
   './assets/img/gym-section-1.jpg',
   './assets/img/gym-section-2.jpg',
-  './assets/img/fitness-loader.gif',
+  './assets/img/fitness-loader-optimized.gif',
+  './assets/img/icon-192.png',
+  './assets/img/icon-512.png',
+  './assets/img/icon-maskable-512.png',
 ];
 
 const NETWORK_ONLY_HOSTS = [

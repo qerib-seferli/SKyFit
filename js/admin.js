@@ -431,6 +431,60 @@ const elements = {
 
   membershipPlansList:
     byId('membershipPlansList'),
+
+  dashboardFinanceChart:
+    byId('dashboardFinanceChart'),
+
+  topSellingProducts:
+    byId('topSellingProducts'),
+
+  expenseCategorySummary:
+    byId('expenseCategorySummary'),
+
+  membershipIncomeSummary:
+    byId('membershipIncomeSummary'),
+
+  reportIncome:
+    byId('reportIncome'),
+
+  reportExpense:
+    byId('reportExpense'),
+
+  reportProfit:
+    byId('reportProfit'),
+
+  reportSalesCount:
+    byId('reportSalesCount'),
+
+  staffList:
+    byId('staffList'),
+
+  openStaffButton:
+    byId('openStaffButton'),
+
+  pwaSupportStatus:
+    byId('pwaSupportStatus'),
+
+  realtimeStatus:
+    byId('realtimeStatus'),
+
+  exportProductsButton:
+    byId('exportProductsButton'),
+
+  exportMembersButton:
+    byId('exportMembersButton'),
+
+  exportDebtsButton:
+    byId('exportDebtsButton'),
+
+  adminGlobalSearch:
+    byId('adminGlobalSearch'),
+
+  adminGlobalSearchResults:
+    byId('adminGlobalSearchResults'),
+
+  trainerSearch:
+    byId('trainerSearch'),
 };
 
 // ============================================================
@@ -2610,6 +2664,7 @@ async function openMembership(memberId = '') {
           required
         >
           ${state.plans
+            .filter((plan) => !plan.is_daily)
             .map((plan) => `
               <option value="${esc(plan.id)}">
                 ${esc(plan.name)}
@@ -3917,36 +3972,91 @@ function renderStockMovementsTable() {
 }
 
 async function loadSettings() {
-  await fetchMembershipPlans();
+  const [plansResult, staffResult] = await Promise.all([
+    sb
+      .from('membership_plans')
+      .select('*')
+      .order('duration_days', { ascending: true }),
 
-  if (!elements.membershipPlansList) {
-    return;
+    sb
+      .from('profiles')
+      .select(`
+        id,
+        auth_user_id,
+        full_name,
+        email,
+        phone,
+        role,
+        is_active,
+        created_at
+      `)
+      .in('role', ['admin', 'staff'])
+      .order('role', { ascending: true })
+      .order('full_name', { ascending: true }),
+  ]);
+
+  if (plansResult.error) throw plansResult.error;
+  if (staffResult.error) throw staffResult.error;
+
+  state.plans = safeArray(plansResult.data);
+
+  if (elements.membershipPlansList) {
+    elements.membershipPlansList.innerHTML = state.plans.length
+      ? state.plans
+          .map((plan) => `
+            <div class="settings-list-item">
+              <div>
+                <strong>${esc(plan.name)}</strong>
+                <small>
+                  ${plan.is_daily ? 'Günlük giriş' : `${plan.duration_days} gün`}
+                  · ${plan.is_active ? 'Aktiv' : 'Deaktiv'}
+                </small>
+              </div>
+              <strong>${esc(money(plan.price))}</strong>
+            </div>
+          `)
+          .join('')
+      : '<div class="empty-state empty-state--compact"><p>Üzvlük planı yoxdur.</p></div>';
   }
 
-  elements.membershipPlansList.innerHTML =
-    state.plans
-      .map((plan) => `
-        <div class="settings-list-item">
-          <div>
-            <strong>
-              ${esc(plan.name)}
-            </strong>
+  const staff = safeArray(staffResult.data);
 
-            <small>
-              ${plan.duration_days} gün
-            </small>
-          </div>
+  if (elements.staffList) {
+    elements.staffList.innerHTML = staff.length
+      ? staff
+          .map((person) => `
+            <div class="settings-list-item">
+              <div>
+                <strong>${esc(getProfileName(person))}</strong>
+                <small>
+                  ${esc(person.email || person.phone || 'Əlaqə yoxdur')}
+                  · ${person.role === 'admin' ? 'Baş idarəçi' : 'İşçi'}
+                </small>
+              </div>
+              <span class="badge ${person.is_active ? 'ok' : 'danger'}">
+                ${person.is_active ? 'Aktiv' : 'Deaktiv'}
+              </span>
+            </div>
+          `)
+          .join('')
+      : '<div class="empty-state empty-state--compact"><p>Admin və işçi hesabı tapılmadı.</p></div>';
+  }
 
-          <div>
-            <strong>
-              ${esc(
-                money(plan.price),
-              )}
-            </strong>
-          </div>
-        </div>
-      `)
-      .join('');
+  if (elements.pwaSupportStatus) {
+    const standalone =
+      window.matchMedia?.('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true;
+
+    elements.pwaSupportStatus.textContent = standalone
+      ? 'Quraşdırılıb'
+      : 'Quraşdırıla bilər';
+    elements.pwaSupportStatus.className = 'status-success';
+  }
+
+  if (elements.realtimeStatus) {
+    elements.realtimeStatus.textContent = sb ? 'Aktiv' : 'Bağlantı yoxdur';
+    elements.realtimeStatus.className = sb ? 'status-success' : 'stat-value--danger';
+  }
 }
 
 
@@ -5817,95 +5927,96 @@ async function handleLedgerSubmit(event) {
 // ============================================================
 
 async function loadReports() {
-  const from =
-    elements.reportFrom?.value ||
-    getDefaultFromDate();
+  const from = elements.reportFrom?.value || getDefaultFromDate();
+  const to = elements.reportTo?.value || todayISO();
 
-  const to =
-    elements.reportTo?.value ||
-    todayISO();
+  if (elements.reportFrom) elements.reportFrom.value = from;
+  if (elements.reportTo) elements.reportTo.value = to;
 
-  if (elements.reportFrom) {
-    elements.reportFrom.value =
-      from;
+  const [ledgerResult, salesResult, itemsResult, membershipsResult] =
+    await Promise.all([
+      sb
+        .from('ledger_entries')
+        .select(`id,entry_date,entry_type,category,description,amount,created_at`)
+        .gte('entry_date', from)
+        .lte('entry_date', to)
+        .order('entry_date', { ascending: true }),
+
+      sb
+        .from('sales')
+        .select('id,total_amount,payment_status,created_at')
+        .gte('created_at', `${from}T00:00:00`)
+        .lte('created_at', `${to}T23:59:59.999`),
+
+      sb
+        .from('sale_items')
+        .select(`
+          product_id,
+          product_name,
+          quantity,
+          line_total,
+          sale:sales!sale_items_sale_id_fkey (
+            id,
+            created_at,
+            payment_status
+          )
+        `),
+
+      sb
+        .from('memberships')
+        .select(`
+          id,
+          price,
+          payment_status,
+          created_at,
+          plan:membership_plans!memberships_plan_id_fkey (
+            id,
+            name,
+            is_daily
+          )
+        `)
+        .gte('created_at', `${from}T00:00:00`)
+        .lte('created_at', `${to}T23:59:59.999`),
+    ]);
+
+  for (const result of [ledgerResult, salesResult, itemsResult, membershipsResult]) {
+    if (result.error) throw result.error;
   }
 
-  if (elements.reportTo) {
-    elements.reportTo.value =
-      to;
-  }
-
-  const {
-    data,
-    error,
-  } = await sb
-    .from('ledger_entries')
-    .select(`
-      id,
-      entry_date,
-      entry_type,
-      category,
-      description,
-      amount,
-      created_at
-    `)
-    .gte('entry_date', from)
-    .lte('entry_date', to)
-    .order('entry_date', {
-      ascending: true,
-    });
-
-  if (error) {
-    throw error;
-  }
-
-  const entries =
-    safeArray(data);
+  const entries = safeArray(ledgerResult.data);
+  const sales = safeArray(salesResult.data);
+  const saleItems = safeArray(itemsResult.data).filter((item) => {
+    const createdAt = item.sale?.created_at;
+    return createdAt && createdAt >= `${from}T00:00:00` && createdAt <= `${to}T23:59:59.999`;
+  });
+  const memberships = safeArray(membershipsResult.data);
 
   const grouped = new Map();
-
   entries.forEach((entry) => {
     if (!grouped.has(entry.entry_date)) {
-      grouped.set(
-        entry.entry_date,
-        {
-          income: 0,
-          expense: 0,
-        },
-      );
+      grouped.set(entry.entry_date, { income: 0, expense: 0 });
     }
-
-    const day =
-      grouped.get(entry.entry_date);
-
-    if (entry.entry_type === 'income') {
-      day.income +=
-        safeNumber(entry.amount);
-    } else {
-      day.expense +=
-        safeNumber(entry.amount);
-    }
+    const day = grouped.get(entry.entry_date);
+    if (entry.entry_type === 'income') day.income += safeNumber(entry.amount);
+    else day.expense += safeNumber(entry.amount);
   });
 
-  state.reportRows =
-    [...grouped.entries()]
-      .map(([date, values]) => ({
-        date,
-        income: values.income,
-        expense: values.expense,
-        profit:
-          values.income -
-          values.expense,
-      }));
+  state.reportRows = [...grouped.entries()].map(([date, values]) => ({
+    date,
+    income: values.income,
+    expense: values.expense,
+    profit: values.income - values.expense,
+  }));
 
-  const totals =
-    calculateLedgerTotals(entries);
-
-  renderReportStats(totals);
+  const totals = calculateLedgerTotals(entries);
+  renderReportStats(totals, sales.length);
   drawReportChart(state.reportRows);
+  renderTopSellingProducts(saleItems);
+  renderExpenseCategorySummary(entries);
+  renderMembershipIncomeSummary(memberships);
 }
 
-function renderReportStats(totals) {
+function renderReportStats(totals, salesCount = 0) {
   if (!elements.reportStats) return;
 
   const cards = [
@@ -5929,6 +6040,12 @@ function renderReportStats(totals) {
           ? 'stat-value--success'
           : 'stat-value--danger',
     },
+
+    {
+      label: 'Satış sayı',
+      value: String(salesCount),
+      className: '',
+    },
   ];
 
   elements.reportStats.innerHTML =
@@ -5945,6 +6062,87 @@ function renderReportStats(totals) {
         </article>
       `)
       .join('');
+}
+
+function renderTopSellingProducts(items) {
+  if (!elements.topSellingProducts) return;
+
+  const totals = new Map();
+  safeArray(items).forEach((item) => {
+    const key = item.product_id || item.product_name;
+    const current = totals.get(key) || {
+      name: item.product_name || 'Məhsul',
+      quantity: 0,
+      amount: 0,
+    };
+    current.quantity += safeNumber(item.quantity);
+    current.amount += safeNumber(item.line_total);
+    totals.set(key, current);
+  });
+
+  const rows = [...totals.values()]
+    .sort((a, b) => b.quantity - a.quantity)
+    .slice(0, 8);
+
+  elements.topSellingProducts.innerHTML = rows.length
+    ? rows
+        .map((row) => `
+          <div class="dashboard-list-item">
+            <span><strong>${esc(row.name)}</strong><small>${number(row.quantity, 2)} satış vahidi</small></span>
+            <strong class="status-success">${esc(money(row.amount))}</strong>
+          </div>
+        `)
+        .join('')
+    : '<div class="empty-state empty-state--compact"><p>Seçilmiş dövrdə məhsul satışı yoxdur.</p></div>';
+}
+
+function renderExpenseCategorySummary(entries) {
+  if (!elements.expenseCategorySummary) return;
+
+  const totals = new Map();
+  safeArray(entries)
+    .filter((entry) => entry.entry_type === 'expense')
+    .forEach((entry) => {
+      totals.set(entry.category, (totals.get(entry.category) || 0) + safeNumber(entry.amount));
+    });
+
+  const rows = [...totals.entries()].sort((a, b) => b[1] - a[1]);
+  elements.expenseCategorySummary.innerHTML = rows.length
+    ? rows
+        .map(([category, amount]) => `
+          <div class="dashboard-list-item">
+            <span><strong>${esc(category)}</strong></span>
+            <strong class="stat-value--danger">${esc(money(amount))}</strong>
+          </div>
+        `)
+        .join('')
+    : '<div class="empty-state empty-state--compact"><p>Seçilmiş dövrdə xərc yoxdur.</p></div>';
+}
+
+function renderMembershipIncomeSummary(memberships) {
+  if (!elements.membershipIncomeSummary) return;
+
+  const totals = new Map();
+  safeArray(memberships).forEach((membership) => {
+    const name = membership.plan?.name || 'Üzvlük';
+    const current = totals.get(name) || { count: 0, paid: 0, debt: 0 };
+    current.count += 1;
+    if (membership.payment_status === 'paid') current.paid += safeNumber(membership.price);
+    if (membership.payment_status === 'debt') current.debt += safeNumber(membership.price);
+    totals.set(name, current);
+  });
+
+  const rows = [...totals.entries()];
+  elements.membershipIncomeSummary.innerHTML = rows.length
+    ? rows
+        .map(([name, values]) => `
+          <div class="dashboard-list-item">
+            <span><strong>${esc(name)}</strong><small>${values.count} qeyd · Borc ${money(values.debt)}</small></span>
+            <strong class="status-success">${esc(money(values.paid))}</strong>
+          </div>
+        `)
+        .join('')
+    : '<div class="empty-state empty-state--compact"><p>Seçilmiş dövrdə üzvlük əməliyyatı yoxdur.</p></div>';
 }
 
 function drawReportChart(rows) {
@@ -6737,6 +6935,22 @@ async function destroyRealtime() {
 }
 
 // ============================================================
+function applyReportPreset() {
+  const preset = elements.reportPeriodPreset?.value || 'custom';
+  if (preset === 'custom') return;
+
+  const today = new Date();
+  let from = new Date(today);
+
+  if (preset === 'week') from.setDate(today.getDate() - 6);
+  if (preset === 'month') from = new Date(today.getFullYear(), today.getMonth(), 1);
+  if (preset === 'year') from = new Date(today.getFullYear(), 0, 1);
+
+  if (elements.reportFrom) elements.reportFrom.value = toISODate(from);
+  if (elements.reportTo) elements.reportTo.value = toISODate(today);
+  void loadReports();
+}
+
 // EVENT-LƏR
 // ============================================================
 
@@ -6952,6 +7166,39 @@ function bindEvents() {
         window.print();
       },
     );
+
+  elements.reportPeriodPreset
+    ?.addEventListener(
+      'change',
+      applyReportPreset,
+    );
+
+  elements.trainerSearch
+    ?.addEventListener(
+      'input',
+      debounce(renderTrainersTable),
+    );
+
+  elements.exportProductsButton
+    ?.addEventListener('click', () => {
+      downloadCSV('skyfit-products.csv', state.products);
+    });
+
+  elements.exportMembersButton
+    ?.addEventListener('click', () => {
+      downloadCSV('skyfit-members.csv', state.members);
+    });
+
+  elements.exportDebtsButton
+    ?.addEventListener('click', () => {
+      downloadCSV('skyfit-debts.csv', state.debts.map((debt) => ({
+        member: getProfileName(debt.member_profile),
+        email: debt.member_profile?.email || '',
+        phone: debt.member_profile?.phone || '',
+        balance: debt.balance,
+        updated_at: debt.updated_at,
+      })));
+    });
 
   elements.openTrainerButton
     ?.addEventListener(

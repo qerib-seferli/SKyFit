@@ -1384,95 +1384,49 @@ function renderSalesHistory() {
 // ============================================================
 
 function renderDebtHistory() {
-  const table =
-    elements.debtTable;
-
+  const table = elements.debtTable;
   if (!table) return;
 
-  if (
-    !state.debtTransactions.length
-  ) {
+  if (!state.debtTransactions.length) {
     table.innerHTML = `
       <tr>
         <td colspan="5">
           <div class="empty-state empty-state--compact">
-            <p>
-              Borc əməliyyatı yoxdur.
-            </p>
+            <p>Borc əməliyyatı yoxdur.</p>
           </div>
         </td>
       </tr>
     `;
 
-    if (elements.debtEmpty) {
-      elements.debtEmpty.hidden =
-        false;
-    }
-
+    if (elements.debtEmpty) elements.debtEmpty.hidden = false;
     return;
   }
 
-  if (elements.debtEmpty) {
-    elements.debtEmpty.hidden =
-      true;
-  }
+  if (elements.debtEmpty) elements.debtEmpty.hidden = true;
 
-  table.innerHTML =
-    state.debtTransactions
-      .map((transaction) => `
-        <tr>
-          <td>
-            ${esc(
-              fmtDateTime(
-                transaction.created_at,
-              ),
-            )}
-          </td>
-
-          <td>
-            <span class="${getDebtTypeBadge(
-              transaction.transaction_type,
-            )}">
-              ${esc(
-                getDebtTypeLabel(
-                  transaction.transaction_type,
-                ),
-              )}
-            </span>
-          </td>
-
-          <td>
-            <strong>
-              ${
-                transaction.transaction_type ===
-                'payment'
-                  ? '-'
-                  : '+'
-              }${esc(
-                money(
-                  transaction.amount,
-                ),
-              )}
-            </strong>
-          </td>
-
-          <td>
-            ${esc(
-              paymentMethodLabel(
-                transaction.payment_method,
-              ),
-            )}
-          </td>
-
-          <td>
-            ${esc(
-              transaction.note ??
-              '—',
-            )}
-          </td>
-        </tr>
-      `)
-      .join('');
+  table.innerHTML = state.debtTransactions
+    .map((transaction) => `
+      <tr>
+        <td>${esc(fmtDateTime(transaction.created_at))}</td>
+        <td>
+          <span class="${getDebtTypeBadge(transaction.transaction_type)}">
+            ${esc(getDebtTypeLabel(transaction.transaction_type))}
+          </span>
+        </td>
+        <td>${esc(transaction.note || '—')}</td>
+        <td>
+          <strong class="${
+            transaction.transaction_type === 'payment'
+              ? 'status-success'
+              : 'stat-value--danger'
+          }">
+            ${transaction.transaction_type === 'payment' ? '-' : '+'}${esc(money(transaction.amount))}
+          </strong>
+        </td>
+        <td>${esc(paymentMethodLabel(transaction.payment_method))}</td>
+      </tr>
+    `)
+    .join('');
 }
 
 // ============================================================
@@ -1867,7 +1821,7 @@ async function loadProfileData() {
           status,
           payment_status,
           created_at,
-          membership_plans (
+          plan:membership_plans!memberships_plan_id_fkey (
             id,
             name,
             price,

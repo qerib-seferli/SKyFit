@@ -736,20 +736,8 @@ async function loadFavorites({
 
     root.innerHTML = `
       <div class="empty-state">
-        <h3>
-          Supabase bağlantısı qurulmayıb
-        </h3>
-
-        <p>
-          js/config.js faylındakı Supabase məlumatlarını yoxlayın.
-        </p>
-
-        <a
-          class="btn btn-primary"
-          href="setup.html"
-        >
-          Quraşdırmaya bax
-        </a>
+        <h3>Məlumatlar yüklənə bilmir</h3>
+        <p>Bir qədər sonra səhifəni yenidən yoxlayın.</p>
       </div>
     `;
 

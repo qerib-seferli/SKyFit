@@ -84,7 +84,7 @@ window.SKYFIT_CONFIG = {
       'assets/img/gym-section-2.jpg',
 
     fitnessLoader:
-      'assets/img/fitness-loader.gif',
+      'assets/img/fitness-loader-optimized.gif',
   },
 
   STORAGE: {

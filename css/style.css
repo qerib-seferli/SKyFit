@@ -5814,3 +5814,133 @@ html[data-theme="light"] .map-frame iframe {
     font-size: 1.12rem;
   }
 }
+
+/* ============================================================
+   SKy Fit v9 — final responsive stabilization
+   ============================================================ */
+
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+body > main,
+body > .app-layout,
+body > .admin-layout {
+  flex: 1 0 auto;
+}
+
+.footer {
+  margin-top: auto;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.admin-page-header {
+  position: sticky;
+  top: 0;
+  z-index: 35;
+  padding-block: 12px;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(16px);
+}
+
+.product-grid,
+.trainer-grid,
+#favorites,
+#profileProducts {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.product-grid .product-card img,
+#favorites .product-card img,
+#profileProducts .product-card img {
+  aspect-ratio: 4 / 3;
+  height: auto;
+  object-fit: cover;
+}
+
+.trainer-grid .trainer-card img,
+.trainer-grid article > img {
+  aspect-ratio: 4 / 5;
+  height: auto !important;
+  object-fit: cover;
+}
+
+.report-charts-grid .dashboard-list {
+  min-height: 180px;
+  max-height: 340px;
+  overflow: auto;
+}
+
+.settings-list-item {
+  min-width: 0;
+}
+
+.settings-list-item > div {
+  min-width: 0;
+}
+
+.settings-list-item strong,
+.settings-list-item small {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1180px) {
+  .product-grid,
+  .trainer-grid,
+  #favorites,
+  #profileProducts {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-page-header {
+    top: 0;
+  }
+
+  .product-grid,
+  .trainer-grid,
+  #favorites,
+  #profileProducts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .product-grid .card,
+  .trainer-grid .card,
+  #favorites .card,
+  #profileProducts .card {
+    padding: 9px;
+    border-radius: 13px;
+  }
+
+  .product-grid h3,
+  .trainer-grid h3,
+  #favorites h3,
+  #profileProducts h3 {
+    font-size: 0.78rem;
+    line-height: 1.25;
+  }
+
+  .product-grid .price,
+  #favorites .price,
+  #profileProducts .price {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .product-grid,
+  .trainer-grid,
+  #favorites,
+  #profileProducts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

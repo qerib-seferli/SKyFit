@@ -48,7 +48,7 @@
           ]
         }
       ],
-      "icon": "assets/img/logo.png",
+      "icon": "assets/img/icon.ico",
       "artifactName": "SKy-Fit-Setup-${version}-${arch}.${ext}"
     },
     "nsis": {
