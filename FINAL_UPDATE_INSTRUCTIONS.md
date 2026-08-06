@@ -56,3 +56,15 @@ Köhnə PWA qalarsa Firefox/Chrome DevTools-da Service Worker-i `Unregister` edi
 7. Hesabat blokları
 8. Tənzimləmələrdə PWA, Realtime və işçi siyahısı
 9. Üzv profilində abunəlik, borc, alış və giriş tarixçəsi
+
+## 2026.08.07 — v2.1 Professional Responsive Upgrade
+
+- Mobil/PWA alt menyu sabit, safe-area uyğun və 3D neon görünüşə keçirildi.
+- Admin mobil görünüşündə sidebar gizlədildi, əsas idarəetmə alt menyuya keçirildi.
+- Admin cədvəlləri dar ekranlarda kart görünüşünə keçirildi.
+- POS, statistika kartları, toolbar və modal ölçüləri mobil cihazlara uyğunlaşdırıldı.
+- Məhsul və məşqçi kartları desktopda 5, telefonda ekran eninə görə 2–3 sütun edildi.
+- Şəkil nisbətləri, kart məsafələri, button ölçüləri və footer boşluqları nizamlandı.
+- Service Worker versiyası `2026.08.07-v8` edildi.
+
+Yeniləmədən sonra brauzerdə bir dəfə Ctrl+F5 edin. PWA köhnə görünüşü saxlayarsa tətbiqi bağlayıb yenidən açın və ya sayt məlumatlarından cache-i təmizləyin.
