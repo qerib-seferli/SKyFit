@@ -24,6 +24,7 @@ import {
   removeRealtimeChannel,
   reportError,
   getErrorMessage,
+  modal,
 } from './core.js';
 
 // ============================================================
@@ -1345,6 +1346,86 @@ function handleFavoriteToggle(
   );
 }
 
+
+function openProductDetails(productId) {
+  const product = state.products.find(
+    (item) => String(item.id) === String(productId),
+  );
+
+  if (!product) return;
+
+  const stock = getStockStatus(product);
+  const category = getProductCategory(product);
+  const priceLabel = getPriceLabel(product);
+  const image = safeImageUrl(product.image_url);
+  const description = String(product.description ?? '').trim();
+
+  modal(`
+    <div class="modal-header">
+      <div>
+        <span class="section-kicker">${esc(category)}</span>
+        <h2>${esc(product.name)}</h2>
+      </div>
+      <button class="icon-btn" type="button" data-modal-close aria-label="Bağla">✕</button>
+    </div>
+    <div class="public-detail-grid">
+      <div class="public-detail-media">
+        <img src="${esc(image)}" alt="${esc(product.name)}" data-image-fallback>
+      </div>
+      <div class="public-detail-content">
+        <span class="${esc(stock.className)}">${esc(stock.label)}</span>
+        <div class="public-detail-price">${esc(priceLabel)}</div>
+        <p>${esc(description || getSaleModeLabel(product))}</p>
+        <div class="public-detail-actions">
+          <button class="btn btn-outline" type="button" data-toggle-favorite="${esc(product.id)}">
+            ${isFavorite(product.id) ? '♥ Seçilib' : '♡ Sevimli'}
+          </button>
+          <a class="btn btn-primary" href="${esc(buildWhatsAppUrl({name: product.name, price: priceLabel, product}))}" target="_blank" rel="noopener noreferrer">
+            Sifariş et
+          </a>
+        </div>
+      </div>
+    </div>
+  `);
+
+  setImageFallbacks();
+}
+
+function openTrainerDetails(trainerId) {
+  const trainer = state.trainers.find(
+    (item) => String(item.id) === String(trainerId),
+  );
+
+  if (!trainer) return;
+
+  const phone = String(trainer.phone ?? business.phone ?? '').trim();
+  const instagram = String(trainer.instagram_url ?? '').trim();
+
+  modal(`
+    <div class="modal-header">
+      <div>
+        <span class="section-kicker">${esc(trainer.specialty || 'Fitnes məşqçisi')}</span>
+        <h2>${esc(trainer.full_name)}</h2>
+      </div>
+      <button class="icon-btn" type="button" data-modal-close aria-label="Bağla">✕</button>
+    </div>
+    <div class="public-detail-grid">
+      <div class="public-detail-media trainer">
+        <img src="${esc(safeImageUrl(trainer.image_url))}" alt="${esc(trainer.full_name)}" data-image-fallback>
+      </div>
+      <div class="public-detail-content">
+        <p>${esc(trainer.bio || 'Məqsədinizə uyğun məşq proqramı və peşəkar nəzarət.')}</p>
+        <div class="public-detail-actions">
+          ${phone ? `<a class="btn btn-outline" href="tel:${esc(phone.replace(/\\s/g,''))}">Zəng et</a>` : ''}
+          ${instagram ? `<a class="btn btn-primary" href="${esc(instagram)}" target="_blank" rel="noopener noreferrer">Instagram</a>` : `<a class="btn btn-primary" href="${esc(buildWhatsAppUrl({name: trainer.full_name}))}" target="_blank" rel="noopener noreferrer">WhatsApp</a>`}
+        </div>
+      </div>
+    </div>
+  `);
+
+  setImageFallbacks();
+}
+
 function bindProductEvents() {
   elements.productSearch
     ?.addEventListener(
@@ -1360,6 +1441,25 @@ function bindProductEvents() {
   document.addEventListener(
     'click',
     (event) => {
+      const modalClose = event.target.closest('[data-modal-close]');
+
+      if (modalClose) {
+        modalClose.closest('.modal')?.classList.remove('open');
+        return;
+      }
+
+      const productCard = event.target.closest('[data-product-card]');
+      if (productCard && !event.target.closest('button, a, input, select, textarea')) {
+        openProductDetails(productCard.dataset.productId);
+        return;
+      }
+
+      const trainerCard = event.target.closest('[data-trainer-id]');
+      if (trainerCard && !event.target.closest('button, a, input, select, textarea')) {
+        openTrainerDetails(trainerCard.dataset.trainerId);
+        return;
+      }
+
       const favoriteButton =
         event.target.closest(
           '[data-toggle-favorite]',

@@ -1530,94 +1530,56 @@ export function layout() {
 // ============================================================
 
 function bindMobileMenu() {
-  const button =
-    byId('mobileMenuButton');
+  const button = byId('mobileMenuButton');
+  const navigation = byId('mobileNavigation');
 
-  const navigation =
-    byId('mobileNavigation');
+  if (!button || !navigation) return;
 
-  if (
-    !button ||
-    !navigation ||
-    button.dataset.menuBound === 'true'
-  ) {
-    return;
-  }
+  // layout() bir neçə dəfə çağırılsa belə eyni handler təkrar bağlanmır.
+  if (button.dataset.menuBound === 'true') return;
+  button.dataset.menuBound = 'true';
 
-  button.dataset.menuBound =
-    'true';
+  const setOpen = (open) => {
+    const shouldOpen = Boolean(open);
 
-  const close = () => {
-    navigation.hidden = true;
-
+    navigation.hidden = !shouldOpen;
+    navigation.classList.toggle('is-open', shouldOpen);
+    button.classList.toggle('is-active', shouldOpen);
+    button.setAttribute('aria-expanded', String(shouldOpen));
     button.setAttribute(
-      'aria-expanded',
-      'false',
+      'aria-label',
+      shouldOpen ? 'Mobil menyunu bağla' : 'Mobil menyunu aç',
     );
+
+    const icon = button.querySelector('span');
+    if (icon) icon.textContent = shouldOpen ? '✕' : '☰';
   };
 
-  const open = () => {
-    navigation.hidden = false;
+  setOpen(false);
 
-    button.setAttribute(
-      'aria-expanded',
-      'true',
-    );
-  };
+  button.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setOpen(navigation.hidden);
+  });
 
-  button.addEventListener(
-    'click',
-    (event) => {
-      event.stopPropagation();
+  navigation.addEventListener('click', (event) => {
+    if (event.target.closest('a')) setOpen(false);
+  });
 
-      if (navigation.hidden) {
-        open();
-      } else {
-        close();
-      }
-    },
-  );
+  document.addEventListener('click', (event) => {
+    if (navigation.hidden) return;
+    if (navigation.contains(event.target) || button.contains(event.target)) return;
+    setOpen(false);
+  });
 
-  navigation.addEventListener(
-    'click',
-    (event) => {
-      if (
-        event.target.closest('a')
-      ) {
-        close();
-      }
-    },
-  );
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') setOpen(false);
+  });
 
-  document.addEventListener(
-    'click',
-    (event) => {
-      if (
-        navigation.hidden ||
-        navigation.contains(
-          event.target,
-        ) ||
-        button.contains(
-          event.target,
-        )
-      ) {
-        return;
-      }
-
-      close();
-    },
-  );
-
-  window.addEventListener(
-    'resize',
-    () => {
-      if (
-        window.innerWidth > 1180
-      ) {
-        close();
-      }
-    },
-  );
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 1180) setOpen(false);
+  });
 }
 
 // ============================================================
